@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wage.biz.mybatis.EmpMonSalMapper" >
+  <!--<cache eviction="LRU" type="com.wage.redis.RedisCache" />-->
+  <cache type="org.mybatis.caches.ignite.IgniteCacheAdapter" />
+  <resultMap id="BaseResultMap" type="com.wage.model.EmpMonSal" >
+    <id column="EMP_ID" property="empId" jdbcType="DECIMAL" />
+    <result column="EMP_BASIC_PAY" property="empBasicPay" jdbcType="DECIMAL" />
+    <result column="EMP_JOB_SALARY" property="empJobSalary" jdbcType="DECIMAL" />
+    <result column="MON_SAL" property="monSal" jdbcType="DECIMAL" />
+  </resultMap>
+  <resultMap id="BaseResultMapExt" type="com.wage.model.ext.EmpMonSalExt" extends="BaseResultMap">
+    <result column="EMP_NAME" property="empName" jdbcType="VARCHAR" />
+    <result column="DEDUCT_SAL" property="deductSal" jdbcType="DECIMAL" />
+    <result column="OTHER_SAL" property="otherSal" jdbcType="DECIMAL" />
+  </resultMap>
+  <resultMap id="BaseResultMapAllExt" type="com.wage.model.ext.EmpMonSalAllExt" extends="BaseResultMap">
+    <result column="REST_SALARY" property="restSalary" jdbcType="DECIMAL" />
+    <result column="FINE_SALARY" property="fineSalary" jdbcType="DECIMAL" />
+    <result column="DEDUCT_SAL" property="deductSal" jdbcType="DECIMAL" />
+    <result column="MONTH_ALLOWANCE" property="monthAllowance" jdbcType="DECIMAL" />
+    <result column="MONTH_SUBSIDY" property="monthSubsidy" jdbcType="DECIMAL" />
+    <result column="MONTH_BONUS" property="monthBonus" jdbcType="DECIMAL" />
+    <result column="OVERTIME_PAY" property="overtimePay" jdbcType="DECIMAL" />
+    <result column="YEAR_END_BONUS" property="yearEndBonus" jdbcType="DECIMAL" />
+    <result column="OTHER_SAL" property="otherSal" jdbcType="DECIMAL" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    EMP_ID, EMP_BASIC_PAY, EMP_JOB_SALARY, MON_SAL
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from EMP_MON_SAL
+    where EMP_ID = #{empId,jdbcType=DECIMAL}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from EMP_MON_SAL
+    where EMP_ID = #{empId,jdbcType=DECIMAL}
+  </delete>
+  <insert id="insert" parameterType="com.wage.model.EmpMonSal" >
+    insert into EMP_MON_SAL (EMP_ID, EMP_BASIC_PAY, EMP_JOB_SALARY, 
+      MON_SAL)
+    values (#{empId,jdbcType=DECIMAL}, #{empBasicPay,jdbcType=DECIMAL}, #{empJobSalary,jdbcType=DECIMAL}, 
+      #{monSal,jdbcType=DECIMAL})
+  </insert>
+  <insert id="insertSelective" parameterType="com.wage.model.EmpMonSal" >
+    insert into EMP_MON_SAL
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="empId != null" >
+        EMP_ID,
+      </if>
+      <if test="empBasicPay != null" >
+        EMP_BASIC_PAY,
+      </if>
+      <if test="empJobSalary != null" >
+        EMP_JOB_SALARY,
+      </if>
+      <if test="monSal != null" >
+        MON_SAL,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="empId != null" >
+        #{empId,jdbcType=DECIMAL},
+      </if>
+      <if test="empBasicPay != null" >
+        #{empBasicPay,jdbcType=DECIMAL},
+      </if>
+      <if test="empJobSalary != null" >
+        #{empJobSalary,jdbcType=DECIMAL},
+      </if>
+      <if test="monSal != null" >
+        #{monSal,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wage.model.EmpMonSal" >
+    update EMP_MON_SAL
+    <set >
+      <if test="empBasicPay != null" >
+        EMP_BASIC_PAY = #{empBasicPay,jdbcType=DECIMAL},
+      </if>
+      <if test="empJobSalary != null" >
+        EMP_JOB_SALARY = #{empJobSalary,jdbcType=DECIMAL},
+      </if>
+      <if test="monSal != null" >
+        MON_SAL = #{monSal,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where EMP_ID = #{empId,jdbcType=DECIMAL}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.wage.model.EmpMonSal" >
+    update EMP_MON_SAL
+    set EMP_BASIC_PAY = #{empBasicPay,jdbcType=DECIMAL},
+      EMP_JOB_SALARY = #{empJobSalary,jdbcType=DECIMAL},
+      MON_SAL = #{monSal,jdbcType=DECIMAL}
+    where EMP_ID = #{empId,jdbcType=DECIMAL}
+  </update>
+  <select id="getBySearch" resultMap="BaseResultMapExt">
+    SELECT A.*,B.EMP_NAME,(SELECT DISTINCT FIRST_VALUE (DEDUCT_SAL) over(ORDER BY YEAR_MONTH DESC) FROM EMP_MON_DEDUCT_SAL WHERE EMP_ID = A.EMP_ID ) as DEDUCT_SAL
+    ,(SELECT DISTINCT FIRST_VALUE (OTHER_SAL) over(ORDER BY YEAR_MONTH DESC) FROM EMP_MON_OTHER_SAL WHERE EMP_ID = A.EMP_ID ) as OTHER_SAL
+    FROM EMP_MON_SAL A LEFT JOIN EMP_DIC_BASIC_INFO B ON A.EMP_ID = B.EMP_ID
+    WHERE 1=1
+    <if test="empName != null and empName != ''" >
+      AND B.EMP_NAME LIKE CONCAT(CONCAT('%',#{empName,jdbcType=VARCHAR}),'%')
+    </if>
+    <if test="empId != null and empId != ''" >
+      AND A.EMP_ID = #{empId,jdbcType=DECIMAL}
+    </if>
+    <if test="basicPayStart != null and basicPayStart != '' and basicPayEnd != null and basicPayEnd != ''" >
+      AND (A.EMP_BASIC_PAY BETWEEN #{basicPayStart,jdbcType=DECIMAL} AND #{basicPayEnd,jdbcType=DECIMAL})
+    </if>
+    <if test="jobSalaryStart != null and jobSalaryStart != '' and jobSalaryEnd != null and jobSalaryEnd != ''" >
+      AND (A.EMP_JOB_SALARY BETWEEN #{jobSalaryStart,jdbcType=DECIMAL} AND #{jobSalaryEnd,jdbcType=DECIMAL})
+    </if>
+    <if test="totalStart != null and totalStart != '' and totalEnd != null and totalEnd != ''" >
+      AND (A.MON_SAL BETWEEN #{totalStart,jdbcType=DECIMAL} AND #{totalEnd,jdbcType=DECIMAL})
+    </if>
+    <if test="sort == null or order == null or sort == '' or order == ''">
+      ORDER BY A.EMP_ID
+    </if>
+    <if test="sort != null and order != null and sort != '' and order != ''">
+      <if test="order == 'asc'">
+        <if test="sort == 'empBasicPay'" >
+          ORDER BY A.EMP_BASIC_PAY ASC,A.EMP_ID ASC
+        </if>
+        <if test="sort == 'empJobSalary'" >
+          ORDER BY A.EMP_JOB_SALARY ASC,A.EMP_ID ASC
+        </if>
+        <if test="sort == 'monSal'" >
+          ORDER BY A.MON_SAL ASC,A.EMP_ID ASC
+        </if>
+      </if>
+
+      <if test="order == 'desc'">
+        <if test="sort == 'empBasicPay'" >
+          ORDER BY A.EMP_BASIC_PAY DESC,A.EMP_ID DESC
+        </if>
+        <if test="sort == 'empJobSalary'" >
+          ORDER BY A.EMP_JOB_SALARY DESC,A.EMP_ID DESC
+        </if>
+        <if test="sort == 'monSal'" >
+          ORDER BY A.MON_SAL DESC,A.EMP_ID DESC
+        </if>
+      </if>
+    </if>
+  </select>
+  <select id="selectTotal" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+    SELECT MON_SAL
+    FROM EMP_MON_SAL
+    where EMP_ID = #{empId,jdbcType=DECIMAL}
+  </select>
+  <select id="findWageByEmpId" resultMap="BaseResultMapAllExt">
+    SELECT A.*,
+    (case when B.MONTH_ALLOWANCE IS NULL then 0 else B.MONTH_ALLOWANCE end) MONTH_ALLOWANCE,
+    (case when B.MONTH_BONUS IS NULL then 0 else B.MONTH_BONUS end) MONTH_BONUS,
+    (case when B.MONTH_SUBSIDY IS NULL then 0 else B.MONTH_SUBSIDY end) MONTH_SUBSIDY,
+    (case when B.OVERTIME_PAY IS NULL then 0 else B.OVERTIME_PAY end) OVERTIME_PAY,
+    (case when B.YEAR_END_BONUS IS NULL then 0 else B.YEAR_END_BONUS end) YEAR_END_BONUS,
+    (case when B.OTHER_SAL IS NULL then 0 else B.OTHER_SAL end) OTHER_SAL,
+    (case when C.FINE_SALARY IS NULL then 0 else C.FINE_SALARY end) FINE_SALARY,
+    (case when C.REST_SALARY IS NULL then 0 else C.REST_SALARY end) REST_SALARY,
+    (case when C.DEDUCT_SAL IS NULL then 0 else C.DEDUCT_SAL end) DEDUCT_SAL
+    FROM EMP_MON_SAL A LEFT JOIN EMP_MON_OTHER_SAL B ON A.EMP_ID = B.EMP_ID AND B.YEAR_MONTH = #{yearMonth,jdbcType=DECIMAL}
+    LEFT JOIN EMP_MON_DEDUCT_SAL C ON A.EMP_ID = C.EMP_ID AND C.YEAR_MONTH = #{yearMonth,jdbcType=DECIMAL}
+    WHERE A.EMP_ID = #{empId,jdbcType=DECIMAL}
+  </select>
+</mapper>

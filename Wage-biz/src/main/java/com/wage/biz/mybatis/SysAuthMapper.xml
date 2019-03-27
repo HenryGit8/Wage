@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wage.biz.mybatis.SysAuthMapper" >
+    <!--<cache eviction="LRU" type="com.wage.redis.RedisCache" />-->
+    <cache type="org.mybatis.caches.ignite.IgniteCacheAdapter" />
+  <resultMap id="BaseResultMap" type="com.wage.model.SysAuth" >
+    <id column="EMP_ID" property="empId" jdbcType="DECIMAL" />
+    <result column="AUTH" property="auth" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    EMP_ID, AUTH
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from SYS_AUTH
+    where EMP_ID = #{empId,jdbcType=DECIMAL}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from SYS_AUTH
+    where EMP_ID = #{empId,jdbcType=DECIMAL}
+  </delete>
+  <insert id="insert" parameterType="com.wage.model.SysAuth" >
+    insert into SYS_AUTH (EMP_ID, AUTH)
+    values (#{empId,jdbcType=DECIMAL}, #{auth,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.wage.model.SysAuth" >
+    insert into SYS_AUTH
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="empId != null" >
+        EMP_ID,
+      </if>
+      <if test="auth != null" >
+        AUTH,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="empId != null" >
+        #{empId,jdbcType=DECIMAL},
+      </if>
+      <if test="auth != null" >
+        #{auth,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wage.model.SysAuth" >
+    update SYS_AUTH
+    <set >
+      <if test="auth != null" >
+        AUTH = #{auth,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where EMP_ID = #{empId,jdbcType=DECIMAL}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.wage.model.SysAuth" >
+    update SYS_AUTH
+    set AUTH = #{auth,jdbcType=VARCHAR}
+    where EMP_ID = #{empId,jdbcType=DECIMAL}
+  </update>
+  <update id="updateAddAuth">
+    update SYS_AUTH
+    set AUTH =
+    (
+    SELECT (
+            case
+            when AUTH is not null
+            then concat(concat(AUTH,','),to_char(#{id,jdbcType=DECIMAL}))
+            else to_char(#{id,jdbcType=DECIMAL}) end
+            )
+	FROM SYS_AUTH WHERE EMP_ID = #{empId,jdbcType=DECIMAL}
+	)
+    where EMP_ID = #{empId,jdbcType=DECIMAL}
+  </update>
+  <update id="updateDeleAuth">
+    update SYS_AUTH
+    SET AUTH =
+    (
+    SELECT wm_concat (ID)
+    FROM
+        (
+            SELECT *
+            FROM (
+                SELECT DISTINCT REGEXP_SUBSTR (AUTH,
+                '[^,]+',
+                1,
+                LEVEL,
+                'i')
+                AS ID
+                FROM SYS_AUTH
+                WHERE EMP_ID = #{empId,jdbcType=DECIMAL}
+                CONNECT BY LEVEL &lt;=
+                LENGTH (AUTH)
+                - LENGTH (REGEXP_REPLACE (AUTH, ',', ''))
+                + 1
+            )
+            WHERE ID != #{id,jdbcType=DECIMAL}
+        )
+    )
+    WHERE  EMP_ID = #{empId,jdbcType=DECIMAL}
+  </update>
+</mapper>

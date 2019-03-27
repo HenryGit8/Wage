@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wage.biz.mybatis.SysHolidayMapper" >
+  <!--<cache eviction="LRU" type="com.wage.redis.RedisCache" />-->
+  <cache type="org.mybatis.caches.ignite.IgniteCacheAdapter" />
+  <resultMap id="BaseResultMap" type="com.wage.model.SysHoliday" >
+    <id column="DATE_TIME" property="dateTime" jdbcType="TIMESTAMP" />
+    <result column="TYPE" property="type" jdbcType="DECIMAL" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    DATE_TIME, TYPE
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.util.Date" >
+    select 
+    <include refid="Base_Column_List" />
+    from SYS_HOLIDAY
+    where DATE_TIME = #{dateTime,jdbcType=TIMESTAMP}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.util.Date" >
+    delete from SYS_HOLIDAY
+    where DATE_TIME = #{dateTime,jdbcType=TIMESTAMP}
+  </delete>
+  <insert id="insert" parameterType="com.wage.model.SysHoliday" >
+    insert into SYS_HOLIDAY (DATE_TIME, TYPE)
+    values (#{dateTime,jdbcType=TIMESTAMP}, #{type,jdbcType=DECIMAL})
+  </insert>
+  <insert id="insertSelective" parameterType="com.wage.model.SysHoliday" >
+    insert into SYS_HOLIDAY
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="dateTime != null" >
+        DATE_TIME,
+      </if>
+      <if test="type != null" >
+        TYPE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="dateTime != null" >
+        #{dateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wage.model.SysHoliday" >
+    update SYS_HOLIDAY
+    <set >
+      <if test="type != null" >
+        TYPE = #{type,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where DATE_TIME = #{dateTime,jdbcType=TIMESTAMP}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.wage.model.SysHoliday" >
+    update SYS_HOLIDAY
+    set TYPE = #{type,jdbcType=DECIMAL}
+    where DATE_TIME = #{dateTime,jdbcType=TIMESTAMP}
+  </update>
+  <select id="findHoliday" resultMap="BaseResultMap" >
+    SELECT *
+    FROM SYS_HOLIDAY
+    WHERE TYPE = 0
+  </select>
+  <select id="findWorkday" resultMap="BaseResultMap" >
+    SELECT *
+    FROM SYS_HOLIDAY
+    WHERE TYPE = 1
+  </select>
+  <select id="findAll" resultMap="BaseResultMap" >
+    SELECT *
+    FROM SYS_HOLIDAY
+  </select>
+</mapper>

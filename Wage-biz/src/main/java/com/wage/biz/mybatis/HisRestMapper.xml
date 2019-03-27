@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wage.biz.mybatis.HisRestMapper" >
+  <!--<cache eviction="LRU" type="com.wage.redis.RedisCache" />-->
+  <cache type="org.mybatis.caches.ignite.IgniteCacheAdapter" />
+  <resultMap id="BaseResultMap" type="com.wage.model.HisRest" >
+    <id column="EMP_ID" property="empId" jdbcType="DECIMAL" />
+    <id column="REST_START_TIME" property="restStartTime" jdbcType="TIMESTAMP" />
+    <result column="REST_HOUR" property="restHour" jdbcType="DECIMAL" />
+    <result column="REST_REASON" property="restReason" jdbcType="VARCHAR" />
+    <result column="REST_END_TIME" property="restEndTime" jdbcType="TIMESTAMP" />
+    <result column="ALL_DAY" property="allDay" jdbcType="DECIMAL" />
+  </resultMap>
+  <resultMap id="BaseResultMapExt" type="com.wage.model.ext.HisRestNExt" extends="BaseResultMap">
+    <result column="EMP_NAME" property="empName" jdbcType="VARCHAR" />
+    <result column="IS_ALLOW" property="isAllow" jdbcType="DECIMAL" />
+    <result column="IS_NOT_MONTH" property="isNotMonth" jdbcType="DECIMAL" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    EMP_ID, REST_START_TIME, REST_HOUR, REST_REASON, REST_END_TIME, ALL_DAY
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="com.wage.model.HisRestKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from HIS_REST
+    where EMP_ID = #{empId,jdbcType=DECIMAL}
+      and REST_START_TIME = #{restStartTime,jdbcType=TIMESTAMP}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="com.wage.model.HisRestKey" >
+    delete from HIS_REST
+    where EMP_ID = #{empId,jdbcType=DECIMAL}
+      and REST_START_TIME = #{restStartTime,jdbcType=TIMESTAMP}
+  </delete>
+  <insert id="insert" parameterType="com.wage.model.HisRest" >
+    insert into HIS_REST (EMP_ID, REST_START_TIME, REST_HOUR, 
+      REST_REASON, REST_END_TIME, ALL_DAY
+      )
+    values (#{empId,jdbcType=DECIMAL}, #{restStartTime,jdbcType=TIMESTAMP}, #{restHour,jdbcType=DECIMAL}, 
+      #{restReason,jdbcType=VARCHAR}, #{restEndTime,jdbcType=TIMESTAMP}, #{allDay,jdbcType=DECIMAL}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.wage.model.HisRest" >
+    insert into HIS_REST
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="empId != null" >
+        EMP_ID,
+      </if>
+      <if test="restStartTime != null" >
+        REST_START_TIME,
+      </if>
+      <if test="restHour != null" >
+        REST_HOUR,
+      </if>
+      <if test="restReason != null" >
+        REST_REASON,
+      </if>
+      <if test="restEndTime != null" >
+        REST_END_TIME,
+      </if>
+      <if test="allDay != null" >
+        ALL_DAY,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="empId != null" >
+        #{empId,jdbcType=DECIMAL},
+      </if>
+      <if test="restStartTime != null" >
+        #{restStartTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="restHour != null" >
+        #{restHour,jdbcType=DECIMAL},
+      </if>
+      <if test="restReason != null" >
+        #{restReason,jdbcType=VARCHAR},
+      </if>
+      <if test="restEndTime != null" >
+        #{restEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="allDay != null" >
+        #{allDay,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wage.model.HisRest" >
+    update HIS_REST
+    <set >
+      <if test="restHour != null" >
+        REST_HOUR = #{restHour,jdbcType=DECIMAL},
+      </if>
+      <if test="restReason != null" >
+        REST_REASON = #{restReason,jdbcType=VARCHAR},
+      </if>
+      <if test="restEndTime != null" >
+        REST_END_TIME = #{restEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="allDay != null" >
+        ALL_DAY = #{allDay,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where EMP_ID = #{empId,jdbcType=DECIMAL}
+      and REST_START_TIME = #{restStartTime,jdbcType=TIMESTAMP}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.wage.model.HisRest" >
+    update HIS_REST
+    set REST_HOUR = #{restHour,jdbcType=DECIMAL},
+      REST_REASON = #{restReason,jdbcType=VARCHAR},
+      REST_END_TIME = #{restEndTime,jdbcType=TIMESTAMP},
+      ALL_DAY = #{allDay,jdbcType=DECIMAL}
+    where EMP_ID = #{empId,jdbcType=DECIMAL}
+      and REST_START_TIME = #{restStartTime,jdbcType=TIMESTAMP}
+  </update>
+  <select id="getByEmpid" resultMap="BaseResultMapExt">
+    SELECT A.*,B.EMP_NAME,(case when C.ID IS NULL then 1 when C.IS_ALLOW =2 then 2 else 0 end) AS IS_ALLOW,(case when to_char(sysdate,'yyyy-mm')=to_char(REST_START_TIME,'yyyy-mm') then 1 else 0 end) AS IS_NOT_MONTH
+    FROM HIS_REST A LEFT JOIN EMP_DIC_BASIC_INFO B ON A.EMP_ID = B.EMP_ID
+    LEFT JOIN HIS_REVOKE_APPLY C ON A.EMP_ID = C.EMP_ID AND A.REST_START_TIME = C.REST_TIME AND C.IS_ALLOW != 1
+    WHERE 1=1
+    <if test="empId != null" >
+      AND A.EMP_ID = #{empId,jdbcType=DECIMAL}
+    </if>
+    <if test="restStartTimeMin != null and restStartTimeMax != null" >
+      AND (A.REST_START_TIME BETWEEN #{restStartTimeMin,jdbcType=TIMESTAMP} AND #{restStartTimeMax,jdbcType=TIMESTAMP}
+      OR A.REST_START_TIME BETWEEN #{restStartTimeMax,jdbcType=TIMESTAMP} AND #{restStartTimeMin,jdbcType=TIMESTAMP})
+    </if>
+    ORDER BY A.REST_START_TIME DESC
+  </select>
+  <update id="updateHisRest" parameterType="com.wage.model.ext.HisRestExt" >
+    update HIS_REST
+    set REST_HOUR = #{restHour,jdbcType=DECIMAL},
+    REST_REASON = #{restReason,jdbcType=VARCHAR},
+    REST_END_TIME = #{restEndTime,jdbcType=TIMESTAMP},
+    ALL_DAY = #{allDay,jdbcType=DECIMAL},
+    REST_START_TIME = #{restStartTime,jdbcType=TIMESTAMP}
+    where EMP_ID = #{empId,jdbcType=DECIMAL}
+    and REST_START_TIME = #{restStartTimeOld,jdbcType=TIMESTAMP}
+  </update>
+  <select id="findThisMonthData" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select *
+    from HIS_REST
+    where (to_char(sysdate,'yyyy-mm')=to_char(REST_START_TIME,'yyyy-mm')
+    or to_char(sysdate,'yyyy-mm')=to_char(REST_END_TIME,'yyyy-mm'))
+    and EMP_ID = #{empId,jdbcType=DECIMAL}
+  </select>
+</mapper>

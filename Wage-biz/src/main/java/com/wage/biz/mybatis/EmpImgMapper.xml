@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wage.biz.mybatis.EmpImgMapper" >
+  <!--<cache eviction="LRU" type="com.wage.redis.RedisCache" />-->
+  <cache type="org.mybatis.caches.ignite.IgniteCacheAdapter" />
+  <resultMap id="BaseResultMap" type="com.wage.model.EmpImg" >
+    <id column="EMP_ID" property="empId" jdbcType="DECIMAL" />
+    <result column="EMP_HEAD_IMG" property="empHeadImg" jdbcType="VARCHAR" />
+    <result column="EMP_OTHER_FILE" property="empOtherFile" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    EMP_ID, EMP_HEAD_IMG, EMP_OTHER_FILE
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from EMP_IMG
+    where EMP_ID = #{empId,jdbcType=DECIMAL}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from EMP_IMG
+    where EMP_ID = #{empId,jdbcType=DECIMAL}
+  </delete>
+  <insert id="insert" parameterType="com.wage.model.EmpImg" >
+    insert into EMP_IMG (EMP_ID, EMP_HEAD_IMG, EMP_OTHER_FILE
+      )
+    values (#{empId,jdbcType=DECIMAL}, #{empHeadImg,jdbcType=VARCHAR}, #{empOtherFile,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.wage.model.EmpImg" >
+    insert into EMP_IMG
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="empId != null" >
+        EMP_ID,
+      </if>
+      <if test="empHeadImg != null" >
+        EMP_HEAD_IMG,
+      </if>
+      <if test="empOtherFile != null" >
+        EMP_OTHER_FILE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="empId != null" >
+        #{empId,jdbcType=DECIMAL},
+      </if>
+      <if test="empHeadImg != null" >
+        #{empHeadImg,jdbcType=VARCHAR},
+      </if>
+      <if test="empOtherFile != null" >
+        #{empOtherFile,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wage.model.EmpImg" >
+    update EMP_IMG
+    <set >
+      <if test="empHeadImg != null" >
+        EMP_HEAD_IMG = #{empHeadImg,jdbcType=VARCHAR},
+      </if>
+      <if test="empOtherFile != null" >
+        EMP_OTHER_FILE = #{empOtherFile,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where EMP_ID = #{empId,jdbcType=DECIMAL}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.wage.model.EmpImg" >
+    update EMP_IMG
+    set EMP_HEAD_IMG = #{empHeadImg,jdbcType=VARCHAR},
+      EMP_OTHER_FILE = #{empOtherFile,jdbcType=VARCHAR}
+    where EMP_ID = #{empId,jdbcType=DECIMAL}
+  </update>
+</mapper>

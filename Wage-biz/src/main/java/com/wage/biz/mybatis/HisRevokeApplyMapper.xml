@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wage.biz.mybatis.HisRevokeApplyMapper" >
+  <!--<cache eviction="LRU" type="com.wage.redis.RedisCache" />-->
+  <cache type="org.mybatis.caches.ignite.IgniteCacheAdapter" />
+  <resultMap id="BaseResultMap" type="com.wage.model.HisRevokeApply" >
+    <id column="ID" property="id" jdbcType="DECIMAL" />
+    <result column="EMP_ID" property="empId" jdbcType="DECIMAL" />
+    <result column="REST_TIME" property="restTime" jdbcType="TIMESTAMP" />
+    <result column="APPLY_TIME" property="applyTime" jdbcType="TIMESTAMP" />
+    <result column="IS_ALLOW" property="isAllow" jdbcType="DECIMAL" />
+  </resultMap>
+  <resultMap id="BaseResultMapExt" type="com.wage.model.ext.HisRevokeApplyExt">
+    <result column="EMP_NAME" property="empName" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, EMP_ID, REST_TIME, APPLY_TIME, IS_ALLOW
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from HIS_REVOKE_APPLY
+    where ID = #{id,jdbcType=DECIMAL}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from HIS_REVOKE_APPLY
+    where ID = #{id,jdbcType=DECIMAL}
+  </delete>
+  <insert id="insert" parameterType="com.wage.model.HisRevokeApply" >
+    insert into HIS_REVOKE_APPLY (ID, EMP_ID, REST_TIME, APPLY_TIME, IS_ALLOW)
+    SELECT (case when MAX(ID) IS NULL then 1 else MAX(ID)+1 end), #{empId,jdbcType=DECIMAL}, #{restTime,jdbcType=TIMESTAMP}, SYSDATE, 0
+      FROM HIS_REVOKE_APPLY
+  </insert>
+  <insert id="insertSelective" parameterType="com.wage.model.HisRevokeApply" >
+    insert into HIS_REVOKE_APPLY
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID,
+      </if>
+      <if test="empId != null" >
+        EMP_ID,
+      </if>
+      <if test="restTime != null" >
+        REST_TIME,
+      </if>
+      <if test="applyTime != null" >
+        APPLY_TIME,
+      </if>
+      <if test="isAllow != null" >
+        IS_ALLOW,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=DECIMAL},
+      </if>
+      <if test="empId != null" >
+        #{empId,jdbcType=DECIMAL},
+      </if>
+      <if test="restTime != null" >
+        #{restTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="applyTime != null" >
+        #{applyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isAllow != null" >
+        #{isAllow,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wage.model.HisRevokeApply" >
+    update HIS_REVOKE_APPLY
+    <set >
+      <if test="empId != null" >
+        EMP_ID = #{empId,jdbcType=DECIMAL},
+      </if>
+      <if test="restTime != null" >
+        REST_TIME = #{restTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="applyTime != null" >
+        APPLY_TIME = #{applyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isAllow != null" >
+        IS_ALLOW = #{isAllow,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=DECIMAL}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.wage.model.HisRevokeApply" >
+    update HIS_REVOKE_APPLY
+    set EMP_ID = #{empId,jdbcType=DECIMAL},
+      REST_TIME = #{restTime,jdbcType=TIMESTAMP},
+      APPLY_TIME = #{applyTime,jdbcType=TIMESTAMP},
+      IS_ALLOW = #{isAllow,jdbcType=DECIMAL}
+    where ID = #{id,jdbcType=DECIMAL}
+  </update>
+  <select id="findAll" resultMap="BaseResultMapExt" parameterType="java.lang.Short">
+    SELECT A.*,B.EMP_NAME
+    FROM HIS_REVOKE_APPLY A LEFT JOIN EMP_DIC_BASIC_INFO B ON A.EMP_ID = B.EMP_ID
+    WHERE 1=1
+    <if test="isAllow != 0" >
+      AND IS_ALLOW != 0
+    </if>
+    <if test="isAllow == 0" >
+      AND IS_ALLOW = 0
+    </if>
+    ORDER BY A.ID DESC
+  </select>
+</mapper>

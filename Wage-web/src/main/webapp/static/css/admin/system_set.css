@@ -1,0 +1,112 @@
+label{
+    font-weight:normal;
+    font-size: 14px;
+    margin: 5px;
+    margin-bottom: 10px;
+    margin-top: 20px;
+}
+.panel-default{
+    box-shadow:0px 3px  10px 0.1px rgba(0, 0, 0, 0.2);
+}
+.list-group li{
+    height: 50px;
+    padding: 15px;
+    font-size: 13px;
+}
+.form-control{
+    box-shadow: inset 0 -1px 1px rgba(0,0,0,.075);
+}
+.list-group-item input{
+    width: 17%;
+    float: right;
+    height: 22px;
+    border:none;
+    display: none;
+}
+.list-group-item span{
+    float: right;
+    margin-left: 5px;
+    margin-top: 3px;
+    cursor:pointer;
+}
+li:hover{
+    background-color: #ccf1e7;
+    color: #0c0500;
+}
+
+.panel-body {
+    padding: 0px;
+}
+
+#loginHisModal
+{
+    top:80px;
+}
+#holidaySetModal{
+    top:55px;
+}
+
+#departSetModal{
+    top:55px;
+}
+
+#chart4,#chart5,#chart6 {
+    width:31.7%;
+    height: 370px;
+    display: none;
+    margin-bottom: 0px;
+    float: left;
+}
+
+#chart4,#chart5{
+    margin-right: 17px;
+}
+
+#datagrids{
+    height: 400px;
+}
+#adatagrids{
+    height: 370px;
+}
+.panel-title {
+    font-size: 12px;
+}
+
+#adminAuthSetModal{
+    top:47px;
+}
+
+#adminSetModal{
+    top:67px;
+}
+
+#chart7,#chart8{
+    width:48%;
+    height: 340px;
+    display: none;
+    margin-bottom: 0px;
+    float: left;
+}
+
+#chart7{
+    margin-right: 17px;
+}
+
+#resetPassModal{
+    top:62px;
+}
+
+#newsSetModal{
+    top:62px;
+}
+.datagrid-row {
+    height: 25px;
+}
+
+#newsImgSetModal{
+    top:62px;
+}
+
+.form-control {
+    height: 40px;
+}

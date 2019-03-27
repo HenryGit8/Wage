@@ -1,0 +1,402 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wage.biz.mybatis.EmpMonOtherSalMapper" >
+  <!--<cache eviction="LRU" type="com.wage.redis.RedisCache" />-->
+  <cache type="org.mybatis.caches.ignite.IgniteCacheAdapter" />
+  <resultMap id="BaseResultMap" type="com.wage.model.EmpMonOtherSal" >
+    <id column="EMP_ID" property="empId" jdbcType="DECIMAL" />
+    <id column="YEAR_MONTH" property="yearMonth" jdbcType="DECIMAL" />
+    <result column="MONTH_ALLOWANCE" property="monthAllowance" jdbcType="DECIMAL" />
+    <result column="MONTH_SUBSIDY" property="monthSubsidy" jdbcType="DECIMAL" />
+    <result column="MONTH_BONUS" property="monthBonus" jdbcType="DECIMAL" />
+    <result column="OVERTIME_PAY" property="overtimePay" jdbcType="DECIMAL" />
+    <result column="YEAR_END_BONUS" property="yearEndBonus" jdbcType="DECIMAL" />
+    <result column="OTHER_SAL" property="otherSal" jdbcType="DECIMAL" />
+  </resultMap>
+  <resultMap id="BaseResultMapExt" type="com.wage.model.ext.EmpMonOtherSalExt" extends="BaseResultMap">
+    <result column="EMP_NAME" property="empName" jdbcType="VARCHAR" />
+    <result column="REST_SALARY" property="restSalary" jdbcType="DECIMAL" />
+    <result column="FINE_SALARY" property="fineSalary" jdbcType="DECIMAL" />
+    <result column="DEDUCT_SAL" property="deductSal" jdbcType="DECIMAL" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    EMP_ID, YEAR_MONTH, MONTH_ALLOWANCE, MONTH_SUBSIDY, MONTH_BONUS, OVERTIME_PAY, YEAR_END_BONUS,
+    OTHER_SAL
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="com.wage.model.EmpMonOtherSalKey" >
+    select
+    <include refid="Base_Column_List" />
+    from EMP_MON_OTHER_SAL
+    where EMP_ID = #{empId,jdbcType=DECIMAL}
+      and YEAR_MONTH = #{yearMonth,jdbcType=DECIMAL}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="com.wage.model.EmpMonOtherSalKey" >
+    delete from EMP_MON_OTHER_SAL
+    where EMP_ID = #{empId,jdbcType=DECIMAL}
+  </delete>
+  <insert id="insert" parameterType="com.wage.model.EmpMonOtherSal" >
+    insert into EMP_MON_OTHER_SAL (EMP_ID, YEAR_MONTH, MONTH_ALLOWANCE,
+      MONTH_SUBSIDY, MONTH_BONUS, OVERTIME_PAY,
+      YEAR_END_BONUS, OTHER_SAL)
+    values (#{empId,jdbcType=DECIMAL}, #{yearMonth,jdbcType=DECIMAL}, #{monthAllowance,jdbcType=DECIMAL},
+      #{monthSubsidy,jdbcType=DECIMAL}, #{monthBonus,jdbcType=DECIMAL}, #{overtimePay,jdbcType=DECIMAL},
+      #{yearEndBonus,jdbcType=DECIMAL}, #{otherSal,jdbcType=DECIMAL})
+  </insert>
+  <insert id="insertSelective" parameterType="com.wage.model.EmpMonOtherSal" >
+    insert into EMP_MON_OTHER_SAL
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="empId != null" >
+        EMP_ID,
+      </if>
+      <if test="yearMonth != null" >
+        YEAR_MONTH,
+      </if>
+      <if test="monthAllowance != null" >
+        MONTH_ALLOWANCE,
+      </if>
+      <if test="monthSubsidy != null" >
+        MONTH_SUBSIDY,
+      </if>
+      <if test="monthBonus != null" >
+        MONTH_BONUS,
+      </if>
+      <if test="overtimePay != null" >
+        OVERTIME_PAY,
+      </if>
+      <if test="yearEndBonus != null" >
+        YEAR_END_BONUS,
+      </if>
+      <if test="otherSal != null" >
+        OTHER_SAL,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="empId != null" >
+        #{empId,jdbcType=DECIMAL},
+      </if>
+      <if test="yearMonth != null" >
+        #{yearMonth,jdbcType=DECIMAL},
+      </if>
+      <if test="monthAllowance != null" >
+        #{monthAllowance,jdbcType=DECIMAL},
+      </if>
+      <if test="monthSubsidy != null" >
+        #{monthSubsidy,jdbcType=DECIMAL},
+      </if>
+      <if test="monthBonus != null" >
+        #{monthBonus,jdbcType=DECIMAL},
+      </if>
+      <if test="overtimePay != null" >
+        #{overtimePay,jdbcType=DECIMAL},
+      </if>
+      <if test="yearEndBonus != null" >
+        #{yearEndBonus,jdbcType=DECIMAL},
+      </if>
+      <if test="otherSal != null" >
+        #{otherSal,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wage.model.EmpMonOtherSal" >
+    update EMP_MON_OTHER_SAL
+    <set >
+      <if test="monthAllowance != null" >
+        MONTH_ALLOWANCE = #{monthAllowance,jdbcType=DECIMAL},
+      </if>
+      <if test="monthSubsidy != null" >
+        MONTH_SUBSIDY = #{monthSubsidy,jdbcType=DECIMAL},
+      </if>
+      <if test="monthBonus != null" >
+        MONTH_BONUS = #{monthBonus,jdbcType=DECIMAL},
+      </if>
+      <if test="overtimePay != null" >
+        OVERTIME_PAY = #{overtimePay,jdbcType=DECIMAL},
+      </if>
+      <if test="yearEndBonus != null" >
+        YEAR_END_BONUS = #{yearEndBonus,jdbcType=DECIMAL},
+      </if>
+      <if test="otherSal != null" >
+        OTHER_SAL = #{otherSal,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where EMP_ID = #{empId,jdbcType=DECIMAL}
+      and YEAR_MONTH = #{yearMonth,jdbcType=DECIMAL}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.wage.model.EmpMonOtherSal" >
+    update EMP_MON_OTHER_SAL
+    set MONTH_ALLOWANCE = #{monthAllowance,jdbcType=DECIMAL},
+      MONTH_SUBSIDY = #{monthSubsidy,jdbcType=DECIMAL},
+      MONTH_BONUS = #{monthBonus,jdbcType=DECIMAL},
+      OVERTIME_PAY = #{overtimePay,jdbcType=DECIMAL},
+      YEAR_END_BONUS = #{yearEndBonus,jdbcType=DECIMAL},
+      OTHER_SAL = #{otherSal,jdbcType=DECIMAL}
+    where EMP_ID = #{empId,jdbcType=DECIMAL}
+      and YEAR_MONTH = #{yearMonth,jdbcType=DECIMAL}
+  </update>
+  <select id="findOtherSal" resultMap="BaseResultMapExt" parameterType="java.lang.Integer">
+    SELECT A.*,B.EMP_NAME,C.REST_SALARY,C.FINE_SALARY,C.DEDUCT_SAL
+    FROM EMP_MON_OTHER_SAL A LEFT JOIN EMP_DIC_BASIC_INFO B ON A.EMP_ID = B.EMP_ID
+    LEFT JOIN EMP_MON_DEDUCT_SAL C ON  A.EMP_ID = C.EMP_ID AND A.YEAR_MONTH = C.YEAR_MONTH
+    WHERE 1=1
+    <if test="empId != null" >
+      AND A.EMP_ID = #{empId,jdbcType=DECIMAL}
+    </if>
+    <if test="sort == null or order == null or sort == '' or order == ''">
+      ORDER BY A.YEAR_MONTH DESC
+    </if>
+    <if test="sort != null and order != null and sort != '' and order != ''">
+      <if test="order == 'asc'">
+        <if test="sort == 'yearMonth'" >
+          ORDER BY A.YEAR_MONTH ASC,A.EMP_ID ASC
+        </if>
+        <if test="sort == 'monthAllowance'" >
+          ORDER BY A.MONTH_ALLOWANCE ASC,A.EMP_ID ASC
+        </if>
+        <if test="sort == 'monthSubsidy'" >
+          ORDER BY A.MONTH_SUBSIDY ASC,A.EMP_ID ASC
+        </if>
+        <if test="sort == 'monthBonus'" >
+          ORDER BY A.MONTH_BONUS ASC,A.EMP_ID ASC
+        </if>
+        <if test="sort == 'overtimePay'" >
+          ORDER BY A.OVERTIME_PAY ASC,A.EMP_ID ASC
+        </if>
+        <if test="sort == 'yearEndBonus'" >
+          ORDER BY A.YEAR_END_BONUS ASC,A.EMP_ID ASC
+        </if>
+        <if test="sort == 'otherSal'" >
+          ORDER BY A.OTHER_SAL ASC,A.EMP_ID ASC
+        </if>
+        <if test="sort == 'restSalary'" >
+          ORDER BY C.REST_SALARY ASC,A.EMP_ID ASC
+        </if>
+        <if test="sort == 'fineSalary'" >
+          ORDER BY C.FINE_SALARY ASC,A.EMP_ID ASC
+        </if>
+        <if test="sort == 'deductSal'" >
+          ORDER BY C.DEDUCT_SAL ASC,A.EMP_ID ASC
+        </if>
+      </if>
+
+      <if test="order == 'desc'">
+        <if test="sort == 'yearMonth'" >
+          ORDER BY A.YEAR_MONTH DESC,A.EMP_ID DESC
+        </if>
+        <if test="sort == 'monthAllowance'" >
+          ORDER BY A.MONTH_ALLOWANCE DESC,A.EMP_ID DESC
+        </if>
+        <if test="sort == 'monthSubsidy'" >
+          ORDER BY A.MONTH_SUBSIDY DESC,A.EMP_ID DESC
+        </if>
+        <if test="sort == 'monthBonus'" >
+          ORDER BY A.MONTH_BONUS DESC,A.EMP_ID DESC
+        </if>
+        <if test="sort == 'overtimePay'" >
+          ORDER BY A.OVERTIME_PAY DESC,A.EMP_ID DESC
+        </if>
+        <if test="sort == 'yearEndBonus'" >
+          ORDER BY A.YEAR_END_BONUS DESC,A.EMP_ID DESC
+        </if>
+        <if test="sort == 'otherSal'" >
+          ORDER BY A.OTHER_SAL DESC,A.EMP_ID DESC
+        </if>
+        <if test="sort == 'restSalary'" >
+          ORDER BY C.REST_SALARY DESC,A.EMP_ID DESC
+        </if>
+        <if test="sort == 'fineSalary'" >
+          ORDER BY C.FINE_SALARY DESC,A.EMP_ID DESC
+        </if>
+        <if test="sort == 'deductSal'" >
+          ORDER BY C.DEDUCT_SAL DESC,A.EMP_ID DESC
+        </if>
+      </if>
+    </if>
+  </select>
+  <update id="updateWelfare" parameterType="java.lang.Integer">
+    UPDATE EMP_MON_OTHER_SAL
+    SET
+    MONTH_ALLOWANCE =
+    (
+    select (case when sum(MONEY) IS NULL then 0 else sum(MONEY) end)
+    from EMP_WELFARE
+    where to_char(sysdate,'yyyy-mm')=to_char(EFFECTIVE_DATE,'yyyy-mm') and TYPE = 1
+    and EMP_ID = #{empId,jdbcType=DECIMAL}
+    ),
+    MONTH_SUBSIDY =
+    (
+    select (case when sum(MONEY) IS NULL then 0 else sum(MONEY) end)
+    from EMP_WELFARE
+    where to_char(sysdate,'yyyy-mm')=to_char(EFFECTIVE_DATE,'yyyy-mm') and TYPE = 2
+    and EMP_ID = #{empId,jdbcType=DECIMAL}
+    ),
+    MONTH_BONUS =
+    (
+    select (case when sum(MONEY) IS NULL then 0 else sum(MONEY) end)
+    from EMP_WELFARE
+    where to_char(sysdate,'yyyy-mm')=to_char(EFFECTIVE_DATE,'yyyy-mm') and TYPE = 3
+    and EMP_ID = #{empId,jdbcType=DECIMAL}
+    ),
+    YEAR_END_BONUS =
+    (
+    select (case when sum(MONEY) IS NULL then 0 else sum(MONEY) end)
+    from EMP_WELFARE
+    where to_char(sysdate,'yyyy-mm')=to_char(EFFECTIVE_DATE,'yyyy-mm') and TYPE = 4
+    and EMP_ID = #{empId,jdbcType=DECIMAL}
+    )
+    WHERE YEAR_MONTH=to_char(SYSDATE,'yyyymm') AND EMP_ID = #{empId,jdbcType=DECIMAL}
+  </update>
+  <insert id="insertWelfare" parameterType="java.lang.Integer">
+    INSERT INTO EMP_MON_OTHER_SAL (EMP_ID, YEAR_MONTH, MONTH_ALLOWANCE,
+      MONTH_SUBSIDY, MONTH_BONUS, OVERTIME_PAY,
+      YEAR_END_BONUS, OTHER_SAL)
+    SELECT #{empId,jdbcType=DECIMAL},to_char(SYSDATE,'yyyymm'),
+    (
+    select (case when sum(MONEY) IS NULL then 0 else sum(MONEY) end)
+    from EMP_WELFARE
+    where to_char(sysdate,'yyyy-mm')=to_char(EFFECTIVE_DATE,'yyyy-mm') and TYPE = 1
+    and EMP_ID = #{empId,jdbcType=DECIMAL}
+    ),(
+    select (case when sum(MONEY) IS NULL then 0 else sum(MONEY) end)
+    from EMP_WELFARE
+    where to_char(sysdate,'yyyy-mm')=to_char(EFFECTIVE_DATE,'yyyy-mm') and TYPE = 2
+    and EMP_ID = #{empId,jdbcType=DECIMAL}
+    ),(
+    select (case when sum(MONEY) IS NULL then 0 else sum(MONEY) end)
+    from EMP_WELFARE
+    where to_char(sysdate,'yyyy-mm')=to_char(EFFECTIVE_DATE,'yyyy-mm') and TYPE = 3
+    and EMP_ID = #{empId,jdbcType=DECIMAL}
+    ),0,(
+    select (case when sum(MONEY) IS NULL then 0 else sum(MONEY) end)
+    from EMP_WELFARE
+    where to_char(sysdate,'yyyy-mm')=to_char(EFFECTIVE_DATE,'yyyy-mm') and TYPE = 3
+    and EMP_ID = #{empId,jdbcType=DECIMAL}
+    ),(
+    select (case when sum(MONEY) IS NULL then 0 else sum(MONEY) end)
+    from EMP_WELFARE
+    where to_char(sysdate,'yyyy-mm')=to_char(EFFECTIVE_DATE,'yyyy-mm')
+    and EMP_ID = #{empId,jdbcType=DECIMAL}
+    )
+    FROM DUAL
+  </insert>
+  <select id="findAll" resultMap="BaseResultMap">
+    SELECT *
+    FROM EMP_MON_OTHER_SAL
+    WHERE YEAR_MONTH = to_char(sysdate,'yyyymm')
+  </select>
+  <update id="updateOtherTotal" parameterType="java.lang.Integer">
+    UPDATE EMP_MON_OTHER_SAL
+    SET
+    OTHER_SAL =
+    (
+    select (
+    case when to_number(MONTH_ALLOWANCE)+to_number(MONTH_SUBSIDY)+to_number(MONTH_BONUS)+to_number(OVERTIME_PAY)+to_number(YEAR_END_BONUS) IS NULL then 0
+    else to_number(MONTH_ALLOWANCE)+to_number(MONTH_SUBSIDY)+to_number(MONTH_BONUS)+to_number(OVERTIME_PAY)+to_number(YEAR_END_BONUS) end
+    )
+    from EMP_MON_OTHER_SAL
+    where YEAR_MONTH = to_number(to_char(sysdate,'yyyymm'))
+    and EMP_ID = #{empId,jdbcType=DECIMAL}
+    )
+    WHERE YEAR_MONTH=to_char(SYSDATE,'yyyymm') AND EMP_ID = #{empId,jdbcType=DECIMAL}
+  </update>
+
+  <update id="updateOtherTotalList" parameterType="java.util.List">
+    <foreach collection="list" item="item" index="index" open="begin" close=";end;" separator=";">
+      UPDATE EMP_MON_OTHER_SAL
+      SET
+      OTHER_SAL =
+      (
+      select (
+      case when to_number(MONTH_ALLOWANCE)+to_number(MONTH_SUBSIDY)+to_number(MONTH_BONUS)+to_number(OVERTIME_PAY)+to_number(YEAR_END_BONUS) IS NULL then 0
+      else to_number(MONTH_ALLOWANCE)+to_number(MONTH_SUBSIDY)+to_number(MONTH_BONUS)+to_number(OVERTIME_PAY)+to_number(YEAR_END_BONUS) end
+      )
+      from EMP_MON_OTHER_SAL
+      where YEAR_MONTH = to_number(to_char(sysdate,'yyyymm'))
+      and EMP_ID = #{item,jdbcType=DECIMAL}
+      )
+      WHERE YEAR_MONTH=to_char(SYSDATE,'yyyymm') AND EMP_ID = #{item,jdbcType=DECIMAL}
+    </foreach>
+  </update>
+  <update id="updateWelfareList"  parameterType="java.util.List">
+    <foreach collection="list" item="item" index="index" open="begin" close=";end;" separator=";">
+      UPDATE EMP_MON_OTHER_SAL
+      SET
+      MONTH_ALLOWANCE =
+      (
+      select (case when sum(MONEY) IS NULL then 0 else sum(MONEY) end)
+      from EMP_WELFARE
+      where to_char(sysdate,'yyyy-mm')=to_char(EFFECTIVE_DATE,'yyyy-mm') and TYPE = 1
+      and EMP_ID = #{item,jdbcType=DECIMAL}
+      ),
+      MONTH_SUBSIDY =
+      (
+      select (case when sum(MONEY) IS NULL then 0 else sum(MONEY) end)
+      from EMP_WELFARE
+      where to_char(sysdate,'yyyy-mm')=to_char(EFFECTIVE_DATE,'yyyy-mm') and TYPE = 2
+      and EMP_ID = #{item,jdbcType=DECIMAL}
+      ),
+      MONTH_BONUS =
+      (
+      select (case when sum(MONEY) IS NULL then 0 else sum(MONEY) end)
+      from EMP_WELFARE
+      where to_char(sysdate,'yyyy-mm')=to_char(EFFECTIVE_DATE,'yyyy-mm') and TYPE = 3
+      and EMP_ID = #{item,jdbcType=DECIMAL}
+      ),
+      YEAR_END_BONUS =
+      (
+      select (case when sum(MONEY) IS NULL then 0 else sum(MONEY) end)
+      from EMP_WELFARE
+      where to_char(sysdate,'yyyy-mm')=to_char(EFFECTIVE_DATE,'yyyy-mm') and TYPE = 4
+      and EMP_ID = #{item,jdbcType=DECIMAL}
+      )
+      WHERE YEAR_MONTH=to_char(SYSDATE,'yyyymm') AND EMP_ID = #{item,jdbcType=DECIMAL}
+    </foreach>
+  </update>
+
+  <insert id="insertEmpWelfareList" parameterType="java.util.List">
+    INSERT INTO EMP_MON_OTHER_SAL (EMP_ID, YEAR_MONTH, MONTH_ALLOWANCE,
+    MONTH_SUBSIDY, MONTH_BONUS, OVERTIME_PAY,
+    YEAR_END_BONUS, OTHER_SAL)
+    SELECT A.*
+    FROM(
+    <foreach collection="list" item="item" index="index" separator="UNION ALL">
+      SELECT #{item,jdbcType=DECIMAL} AS EMP_ID,to_char(SYSDATE,'yyyymm') AS YEAR_MONTH,
+      (
+      select (case when sum(MONEY) IS NULL then 0 else sum(MONEY) end)
+      from EMP_WELFARE
+      where to_char(sysdate,'yyyy-mm')=to_char(EFFECTIVE_DATE,'yyyy-mm') and TYPE = 1
+      and EMP_ID = #{item,jdbcType=DECIMAL}
+      ),(
+      select (case when sum(MONEY) IS NULL then 0 else sum(MONEY) end)
+      from EMP_WELFARE
+      where to_char(sysdate,'yyyy-mm')=to_char(EFFECTIVE_DATE,'yyyy-mm') and TYPE = 2
+      and EMP_ID = #{item,jdbcType=DECIMAL}
+      ),(
+      select (case when sum(MONEY) IS NULL then 0 else sum(MONEY) end)
+      from EMP_WELFARE
+      where to_char(sysdate,'yyyy-mm')=to_char(EFFECTIVE_DATE,'yyyy-mm') and TYPE = 3
+      and EMP_ID = #{item,jdbcType=DECIMAL}
+      ),0,(
+      select (case when sum(MONEY) IS NULL then 0 else sum(MONEY) end)
+      from EMP_WELFARE
+      where to_char(sysdate,'yyyy-mm')=to_char(EFFECTIVE_DATE,'yyyy-mm') and TYPE = 3
+      and EMP_ID = #{item,jdbcType=DECIMAL}
+      ),(
+      select (case when sum(MONEY) IS NULL then 0 else sum(MONEY) end)
+      from EMP_WELFARE
+      where to_char(sysdate,'yyyy-mm')=to_char(EFFECTIVE_DATE,'yyyy-mm')
+      and EMP_ID = #{item,jdbcType=DECIMAL}
+      )
+      FROM DUAL
+    </foreach>
+    )A
+    WHERE (A.EMP_ID,A.YEAR_MONTH) NOT IN (SELECT EMP_ID,YEAR_MONTH FROM EMP_MON_OTHER_SAL )
+  </insert>
+  <insert id="insertInitialData">
+    INSERT INTO EMP_MON_OTHER_SAL(EMP_ID, YEAR_MONTH, MONTH_ALLOWANCE,
+      MONTH_SUBSIDY, MONTH_BONUS, OVERTIME_PAY,
+      YEAR_END_BONUS, OTHER_SAL)
+    SELECT EMP_ID, #{yearMonth,jdbcType=DECIMAL}, 0, 0, 0, 0, 0, 0
+    FROM EMP_DIC_BASIC_INFO
+    WHERE (EMP_ID,#{yearMonth,jdbcType=DECIMAL}) NOT IN (SELECT EMP_ID,YEAR_MONTH FROM EMP_MON_OTHER_SAL )
+  </insert>
+</mapper>

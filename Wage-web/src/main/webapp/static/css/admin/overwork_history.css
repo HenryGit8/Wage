@@ -1,0 +1,80 @@
+#btnGroup a{
+    width: 80px;
+}
+#chart3{
+    float: left;
+}
+#chart4{
+    float: right;
+}
+#cardparent1{
+    width: 100%;
+}
+#btnGroup a{
+    width: 70px;
+}
+.layout-panel-north, .layout-panel-south {
+    z-index: 5;
+}
+#myModal1,#myModal2
+{
+    top:90px;
+}
+td.fc-day:link { color:#000; text-decoration:none;}
+td.fc-day:visited { color:#000; text-decoration:none;}
+td.fc-day:hover { color: #0c0500; text-decoration:none; background-color: #eff3f6;}
+
+#applyModal,#applyHisModal
+{
+    top:45px;
+}
+#north a{
+    margin-right: 8px;
+    float: right;
+    width: 70px;
+}
+#north{
+    width: 456px;
+    float: right;
+    margin-left: 5px;
+}
+#overTimeStartMin,#overTimeStartMax{
+    width:154px;
+    left: 30px;
+    height: 24.8px;
+}
+#tb1{
+    padding:5px;
+    height: 38px;
+    padding-top: 7px;
+}
+#chart4{
+    width: 78.8%;
+    height: 100%;
+}
+#Eq{
+    width:93px;
+    height: 26px;
+}
+#chart3{
+    width: 18.8%;
+    height: 100%;
+}
+#cardparent1{
+    height: 100%;
+    padding: 28px;
+}
+#overTimeStartMin,#overTimeStartMax,#label1,#label2{
+    float: left;
+}
+#label1,#label2{
+    margin-top:5px;
+    font-size: 12px;
+}
+#label2{
+    margin-right: 3px;
+    margin-left: 3px;
+}
+#overTimeStartMin,#overTimeStartMax{
+    font-size: 13px;
+}

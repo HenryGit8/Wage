@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wage.biz.mybatis.EmpMonDeductSalMapper" >
+  <!--<cache eviction="LRU" type="com.wage.redis.RedisCache" />-->
+  <cache type="org.mybatis.caches.ignite.IgniteCacheAdapter" />
+  <resultMap id="BaseResultMap" type="com.wage.model.EmpMonDeductSal" >
+    <id column="EMP_ID" property="empId" jdbcType="DECIMAL" />
+    <id column="YEAR_MONTH" property="yearMonth" jdbcType="DECIMAL" />
+    <result column="REST_SALARY" property="restSalary" jdbcType="DECIMAL" />
+    <result column="FINE_SALARY" property="fineSalary" jdbcType="DECIMAL" />
+    <result column="DEDUCT_SAL" property="deductSal" jdbcType="DECIMAL" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    EMP_ID, YEAR_MONTH, REST_SALARY, FINE_SALARY, DEDUCT_SAL
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="com.wage.model.EmpMonDeductSalKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from EMP_MON_DEDUCT_SAL
+    where EMP_ID = #{empId,jdbcType=DECIMAL}
+      and YEAR_MONTH = #{yearMonth,jdbcType=DECIMAL}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="com.wage.model.EmpMonDeductSalKey" >
+    delete from EMP_MON_DEDUCT_SAL
+    where EMP_ID = #{empId,jdbcType=DECIMAL}
+  </delete>
+  <insert id="insert" parameterType="com.wage.model.EmpMonDeductSal" >
+    insert into EMP_MON_DEDUCT_SAL (EMP_ID, YEAR_MONTH, REST_SALARY, 
+      FINE_SALARY, DEDUCT_SAL)
+    values (#{empId,jdbcType=DECIMAL}, #{yearMonth,jdbcType=DECIMAL}, #{restSalary,jdbcType=DECIMAL}, 
+      #{fineSalary,jdbcType=DECIMAL}, #{deductSal,jdbcType=DECIMAL})
+  </insert>
+  <insert id="insertSelective" parameterType="com.wage.model.EmpMonDeductSal" >
+    insert into EMP_MON_DEDUCT_SAL
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="empId != null" >
+        EMP_ID,
+      </if>
+      <if test="yearMonth != null" >
+        YEAR_MONTH,
+      </if>
+      <if test="restSalary != null" >
+        REST_SALARY,
+      </if>
+      <if test="fineSalary != null" >
+        FINE_SALARY,
+      </if>
+      <if test="deductSal != null" >
+        DEDUCT_SAL,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="empId != null" >
+        #{empId,jdbcType=DECIMAL},
+      </if>
+      <if test="yearMonth != null" >
+        #{yearMonth,jdbcType=DECIMAL},
+      </if>
+      <if test="restSalary != null" >
+        #{restSalary,jdbcType=DECIMAL},
+      </if>
+      <if test="fineSalary != null" >
+        #{fineSalary,jdbcType=DECIMAL},
+      </if>
+      <if test="deductSal != null" >
+        #{deductSal,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wage.model.EmpMonDeductSal" >
+    update EMP_MON_DEDUCT_SAL
+    <set >
+      <if test="restSalary != null" >
+        REST_SALARY = #{restSalary,jdbcType=DECIMAL},
+      </if>
+      <if test="fineSalary != null" >
+        FINE_SALARY = #{fineSalary,jdbcType=DECIMAL},
+      </if>
+      <if test="deductSal != null" >
+        DEDUCT_SAL = #{deductSal,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where EMP_ID = #{empId,jdbcType=DECIMAL}
+      and YEAR_MONTH = #{yearMonth,jdbcType=DECIMAL}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.wage.model.EmpMonDeductSal" >
+    update EMP_MON_DEDUCT_SAL
+    set REST_SALARY = #{restSalary,jdbcType=DECIMAL},
+      FINE_SALARY = #{fineSalary,jdbcType=DECIMAL},
+      DEDUCT_SAL = #{deductSal,jdbcType=DECIMAL}
+    where EMP_ID = #{empId,jdbcType=DECIMAL}
+      and YEAR_MONTH = #{yearMonth,jdbcType=DECIMAL}
+  </update>
+  <update id="updateTotal" parameterType="java.lang.Integer">
+    UPDATE EMP_MON_DEDUCT_SAL
+    SET DEDUCT_SAL =
+    (
+    SELECT to_number(REST_SALARY)+to_number(FINE_SALARY)
+    FROM EMP_MON_DEDUCT_SAL
+    WHERE YEAR_MONTH = to_number(to_char(sysdate,'yyyymm'))
+    and EMP_ID = #{empId,jdbcType=DECIMAL}
+    )
+    WHERE YEAR_MONTH = to_number(to_char(sysdate,'yyyymm'))
+    and EMP_ID = #{empId,jdbcType=DECIMAL}
+  </update>
+  <insert id="insertInitialData">
+    INSERT INTO EMP_MON_DEDUCT_SAL(EMP_ID, YEAR_MONTH, REST_SALARY,
+      FINE_SALARY, DEDUCT_SAL)
+    SELECT EMP_ID, #{yearMonth,jdbcType=DECIMAL}, 0, 0, 0
+    FROM EMP_DIC_BASIC_INFO
+    WHERE (EMP_ID,#{yearMonth,jdbcType=DECIMAL}) NOT IN (SELECT EMP_ID,YEAR_MONTH FROM EMP_MON_DEDUCT_SAL )
+  </insert>
+</mapper>

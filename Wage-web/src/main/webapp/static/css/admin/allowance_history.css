@@ -1,0 +1,120 @@
+#card1{
+    float: left;
+}
+#card2{
+    float: right;
+}
+.main-panel {
+    width: 100%;
+}
+#searchBtn{
+    width:calc((100% - 70px)/2);
+    margin-top: 10px;
+    margin-left: 62px
+}
+#searchAllBtn{
+    margin-top: 10px;
+    width:calc((100% - 70px)/2);
+    margin-left: 2px;
+}
+#Eq{
+    width: 139px;
+    height: 26px
+}
+
+#sq{
+    width: 129px;
+    height: 26px
+}
+
+#tb1{
+    padding:5px;
+    height: 36px;
+    padding-top: 7px;
+}
+
+#tb2{
+    padding:5px;
+    height: 36px;
+    padding-top: 7px;
+}
+#applyTimeMin,#applyTimeMax,#welfareTotalMin,#welfareTotalMax{
+    width:98px;
+    left: 30px;
+    height: 24.8px;
+    font-size: 13px;
+}
+#welfareTotalMin,#welfareTotalMax{
+    width:84px;
+}
+#applyTimeMin,#applyTimeMax,#welfareTotalMin,#welfareTotalMax,#label1,#label2,#label3,#label4,#total,div .btn-separator{
+    float: left;
+}
+#label1,#label2,#label3,#label4{
+    margin-top:5px;
+    font-size: 12px;
+}
+#label2,#label3,#label4{
+    margin-right: 3px;
+    margin-left: 3px;
+}
+#welfareTotalMin,#welfareTotalMax{
+    margin-bottom: 5px;
+}
+
+#formdiv a{
+    float: right;
+    width: 60px;
+}
+div .btn-separator {
+     height: 24px;
+     border-left: 1px solid LightGrey;
+     border-right: 0px solid LightGrey;
+     margin: 1px 3px 5px 5px;
+ }
+#applyModal,#addModal
+{
+    top:60px;
+}
+
+#effectiveDateMin,#effectiveDateMax,#moneyMin,#moneyMax{
+    width:98px;
+    left: 30px;
+    height: 24.8px;
+    font-size: 13px;
+}
+#moneyMin,#moneyMax{
+    width:84px;
+}
+#effectiveDateMin,#effectiveDateMax,#moneyMin,#moneyMax,#label5,#label6,#label7,#label8,#total1,div .btn-separator{
+    float: left;
+}
+#label5,#label6,#label7,#label8{
+    margin-top:5px;
+    font-size: 12px;
+}
+#label6,#label7,#label8{
+    margin-right: 3px;
+    margin-left: 3px;
+}
+#moneyMin,#moneyMax{
+    margin-bottom: 5px;
+}
+
+#formdiv1 a{
+    float: right;
+    width: 60px;
+}
+.card .category, .card label {
+    color: #333;
+}
+#welfareType{
+    width: 80px;
+}
+#updateModal{
+    top:90px;
+}
+#_easyui_textbox_input9{
+    width:178px;
+    height: 125px
+}

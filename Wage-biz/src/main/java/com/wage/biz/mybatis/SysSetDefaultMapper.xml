@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wage.biz.mybatis.SysSetDefaultMapper" >
+  <!--<cache eviction="LRU" type="com.wage.redis.RedisCache" />-->
+  <cache type="org.mybatis.caches.ignite.IgniteCacheAdapter" />
+  <resultMap id="BaseResultMap" type="com.wage.model.SysSetDefault" >
+    <id column="SET_NAME" property="setName" jdbcType="VARCHAR" />
+    <result column="SET_VALUE" property="setValue" jdbcType="VARCHAR" />
+    <result column="REMARKS" property="remarks" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    SET_NAME, SET_VALUE, REMARKS
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from SYS_SET_DEFAULT
+    where SET_NAME = #{setName,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from SYS_SET_DEFAULT
+    where SET_NAME = #{setName,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.wage.model.SysSetDefault" >
+    insert into SYS_SET_DEFAULT (SET_NAME, SET_VALUE, REMARKS
+      )
+    values (#{setName,jdbcType=VARCHAR}, #{setValue,jdbcType=VARCHAR}, #{remarks,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.wage.model.SysSetDefault" >
+    insert into SYS_SET_DEFAULT
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="setName != null" >
+        SET_NAME,
+      </if>
+      <if test="setValue != null" >
+        SET_VALUE,
+      </if>
+      <if test="remarks != null" >
+        REMARKS,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="setName != null" >
+        #{setName,jdbcType=VARCHAR},
+      </if>
+      <if test="setValue != null" >
+        #{setValue,jdbcType=VARCHAR},
+      </if>
+      <if test="remarks != null" >
+        #{remarks,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wage.model.SysSetDefault" >
+    update SYS_SET_DEFAULT
+    <set >
+      <if test="setValue != null" >
+        SET_VALUE = #{setValue,jdbcType=VARCHAR},
+      </if>
+      <if test="remarks != null" >
+        REMARKS = #{remarks,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where SET_NAME = #{setName,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.wage.model.SysSetDefault" >
+    update SYS_SET_DEFAULT
+    set SET_VALUE = #{setValue,jdbcType=VARCHAR},
+      REMARKS = #{remarks,jdbcType=VARCHAR}
+    where SET_NAME = #{setName,jdbcType=VARCHAR}
+  </update>
+</mapper>

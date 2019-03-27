@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.4" id="fckeditor-java" xmlns="http://java.sun.com/xml/ns/j2ee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+
+	<display-name>WAGE-WEB</display-name>
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>classpath*:spring-*.xml</param-value>
+	</context-param>
+	
+   <listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	<filter>
+		<filter-name>Set Character Encoding</filter-name>
+		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>Set Character Encoding</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	
+	<servlet>
+		<servlet-name>springServlet</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>classpath:springMvc.xml</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>springServlet</servlet-name>
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>
+
+	<!--<listener>
+		<listener-class>org.apache.ignite.startup.servlet.ServletContextListenerStartup</listener-class>
+	</listener>
+	<filter>
+		<filter-name>IgniteWebSessionsFilter</filter-name>
+		<filter-class>org.apache.ignite.cache.websession.WebSessionFilter</filter-class>
+		<init-param>
+			<param-name>IgniteWebSessionsCacheName</param-name>
+			<param-value>partitioned</param-value>
+		</init-param>
+	</filter>-->
+	<!--You can also specify a custom URL pattern.-->
+	<!--<filter-mapping>
+		<filter-name>IgniteWebSessionsFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>-->
+	<!--Specify Ignite configuration (relative to META-INF folder or Ignite_HOME)-->
+	<!--<context-param>
+		<param-name>IgniteConfigurationFilePath</param-name>
+		<param-value>../WEB-INF/classes/ignite-config.xml</param-value>
+	</context-param>-->
+
+	<filter>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	
+</web-app>

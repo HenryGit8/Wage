@@ -1,0 +1,654 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wage.biz.mybatis.HisSalaryMapper" >
+  <!--<cache eviction="LRU" type="com.wage.redis.RedisCache" />-->
+  <cache type="org.mybatis.caches.ignite.IgniteCacheAdapter" />
+  <resultMap id="BaseResultMap" type="com.wage.model.HisSalary" >
+    <id column="EMP_ID" property="empId" jdbcType="DECIMAL" />
+    <id column="YEAR_MONTH" property="yearMonth" jdbcType="DECIMAL" />
+    <result column="MON_SAL" property="monSal" jdbcType="DECIMAL" />
+    <result column="OTHER_SAL" property="otherSal" jdbcType="DECIMAL" />
+    <result column="DEDUCT_SAL" property="deductSal" jdbcType="DECIMAL" />
+    <result column="GROSS_PAY" property="grossPay" jdbcType="DECIMAL" />
+    <result column="ACTUAL_PAY" property="actualPay" jdbcType="DECIMAL" />
+    <result column="EMP_BANK_CARD" property="empBankCard" jdbcType="DECIMAL" />
+    <result column="IS_GRANT" property="isGrant" jdbcType="DECIMAL" />
+    <result column="GRANT_TIME" property="grantTime" jdbcType="TIMESTAMP" />
+    <result column="GRANT_EMPID" property="grantEmpid" jdbcType="DECIMAL" />
+    <result column="PEN_INSUR_PAY" property="penInsurPay" jdbcType="DECIMAL" />
+    <result column="MED_INSUR_PAY" property="medInsurPay" jdbcType="DECIMAL" />
+    <result column="UNEMP_INSUR_PAY" property="unempInsurPay" jdbcType="DECIMAL" />
+    <result column="BAS_HOUS_PRO_FUND_PAY" property="basHousProFundPay" jdbcType="DECIMAL" />
+    <result column="PEN_INSUR_PAY_C" property="penInsurPayC" jdbcType="DECIMAL" />
+    <result column="MED_INSUR_PAY_C" property="medInsurPayC" jdbcType="DECIMAL" />
+    <result column="UNEMP_INSUR_PAY_C" property="unempInsurPayC" jdbcType="DECIMAL" />
+    <result column="BAS_HOUS_PRO_FUND_PAY_C" property="basHousProFundPayC" jdbcType="DECIMAL" />
+    <result column="EMP_INJURY_INSUR_PAY_C" property="empInjuryInsurPayC" jdbcType="DECIMAL" />
+    <result column="BIRTH_INSUR_C" property="birthInsurC" jdbcType="DECIMAL" />
+    <result column="PERSON_INCOME_TAX" property="personIncomeTax" jdbcType="DECIMAL" />
+    <result column="REMARKS" property="remarks" jdbcType="VARCHAR" />
+    <result column="PENSON_PAY" property="pensonPay" jdbcType="DECIMAL" />
+    <result column="COMPANY_PAY" property="companyPay" jdbcType="DECIMAL" />
+  </resultMap>
+  <resultMap id="BaseResultMapExt" type="com.wage.model.ext.HisSalaryExt" extends="BaseResultMap">
+    <result column="EMP_NAME" property="empName" jdbcType="VARCHAR" />
+    <result column="DEPART_NAME" property="departName" jdbcType="VARCHAR" />
+    <result column="GRANT_NAME" property="grantName" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <resultMap id="ChartResultMap" type="com.wage.model.dto.HisSalaryChartDto">
+    <result column="YEAR_MONTH" property="yearMonth" jdbcType="VARCHAR" />
+    <result column="MON_SAL_SUM" property="monSalSum" jdbcType="VARCHAR" />
+    <result column="OTHER_SAL_SUM" property="otherSalSum" jdbcType="VARCHAR" />
+    <result column="DEDUCT_SAL_SUM" property="deductSalSum" jdbcType="VARCHAR" />
+    <result column="GROSS_PAY_SUM" property="grossPaySum" jdbcType="VARCHAR" />
+    <result column="ACTUAL_PAY_SUM" property="actualPaySum" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    EMP_ID, YEAR_MONTH, MON_SAL, OTHER_SAL, DEDUCT_SAL, GROSS_PAY, ACTUAL_PAY, EMP_BANK_CARD, 
+    IS_GRANT, GRANT_TIME, GRANT_EMPID, PEN_INSUR_PAY, MED_INSUR_PAY, UNEMP_INSUR_PAY, 
+    BAS_HOUS_PRO_FUND_PAY, PEN_INSUR_PAY_C, MED_INSUR_PAY_C, UNEMP_INSUR_PAY_C, BAS_HOUS_PRO_FUND_PAY_C, 
+    EMP_INJURY_INSUR_PAY_C, BIRTH_INSUR_C, PERSON_INCOME_TAX, REMARKS, PENSON_PAY, COMPANY_PAY
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="com.wage.model.HisSalaryKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from HIS_SALARY
+    where EMP_ID = #{empId,jdbcType=DECIMAL}
+      and YEAR_MONTH = #{yearMonth,jdbcType=DECIMAL}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="com.wage.model.HisSalaryKey" >
+    delete from HIS_SALARY
+    where EMP_ID = #{empId,jdbcType=DECIMAL}
+  </delete>
+  <insert id="insert" parameterType="com.wage.model.HisSalary" >
+    insert into HIS_SALARY (EMP_ID, YEAR_MONTH, MON_SAL, 
+      OTHER_SAL, DEDUCT_SAL, GROSS_PAY, 
+      ACTUAL_PAY, EMP_BANK_CARD, IS_GRANT, 
+      GRANT_TIME, GRANT_EMPID, PEN_INSUR_PAY, 
+      MED_INSUR_PAY, UNEMP_INSUR_PAY, BAS_HOUS_PRO_FUND_PAY, 
+      PEN_INSUR_PAY_C, MED_INSUR_PAY_C, UNEMP_INSUR_PAY_C, 
+      BAS_HOUS_PRO_FUND_PAY_C, EMP_INJURY_INSUR_PAY_C, 
+      BIRTH_INSUR_C, PERSON_INCOME_TAX, REMARKS,
+      PENSON_PAY, COMPANY_PAY
+      )
+    values (#{empId,jdbcType=DECIMAL}, #{yearMonth,jdbcType=DECIMAL}, #{monSal,jdbcType=DECIMAL}, 
+      #{otherSal,jdbcType=DECIMAL}, #{deductSal,jdbcType=DECIMAL}, #{grossPay,jdbcType=DECIMAL}, 
+      #{actualPay,jdbcType=DECIMAL}, #{empBankCard,jdbcType=DECIMAL}, #{isGrant,jdbcType=DECIMAL}, 
+      #{grantTime,jdbcType=TIMESTAMP}, #{grantEmpid,jdbcType=DECIMAL}, #{penInsurPay,jdbcType=DECIMAL}, 
+      #{medInsurPay,jdbcType=DECIMAL}, #{unempInsurPay,jdbcType=DECIMAL}, #{basHousProFundPay,jdbcType=DECIMAL}, 
+      #{penInsurPayC,jdbcType=DECIMAL}, #{medInsurPayC,jdbcType=DECIMAL}, #{unempInsurPayC,jdbcType=DECIMAL}, 
+      #{basHousProFundPayC,jdbcType=DECIMAL}, #{empInjuryInsurPayC,jdbcType=DECIMAL}, 
+      #{birthInsurC,jdbcType=DECIMAL}, #{personIncomeTax,jdbcType=DECIMAL}, #{remarks,jdbcType=VARCHAR},
+      #{pensonPay,jdbcType=DECIMAL}, #{companyPay,jdbcType=DECIMAL}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.wage.model.HisSalary" >
+    insert into HIS_SALARY
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="empId != null" >
+        EMP_ID,
+      </if>
+      <if test="yearMonth != null" >
+        YEAR_MONTH,
+      </if>
+      <if test="monSal != null" >
+        MON_SAL,
+      </if>
+      <if test="otherSal != null" >
+        OTHER_SAL,
+      </if>
+      <if test="deductSal != null" >
+        DEDUCT_SAL,
+      </if>
+      <if test="grossPay != null" >
+        GROSS_PAY,
+      </if>
+      <if test="actualPay != null" >
+        ACTUAL_PAY,
+      </if>
+      <if test="empBankCard != null" >
+        EMP_BANK_CARD,
+      </if>
+      <if test="isGrant != null" >
+        IS_GRANT,
+      </if>
+      <if test="grantTime != null" >
+        GRANT_TIME,
+      </if>
+      <if test="grantEmpid != null" >
+        GRANT_EMPID,
+      </if>
+      <if test="penInsurPay != null" >
+        PEN_INSUR_PAY,
+      </if>
+      <if test="medInsurPay != null" >
+        MED_INSUR_PAY,
+      </if>
+      <if test="unempInsurPay != null" >
+        UNEMP_INSUR_PAY,
+      </if>
+      <if test="basHousProFundPay != null" >
+        BAS_HOUS_PRO_FUND_PAY,
+      </if>
+      <if test="penInsurPayC != null" >
+        PEN_INSUR_PAY_C,
+      </if>
+      <if test="medInsurPayC != null" >
+        MED_INSUR_PAY_C,
+      </if>
+      <if test="unempInsurPayC != null" >
+        UNEMP_INSUR_PAY_C,
+      </if>
+      <if test="basHousProFundPayC != null" >
+        BAS_HOUS_PRO_FUND_PAY_C,
+      </if>
+      <if test="empInjuryInsurPayC != null" >
+        EMP_INJURY_INSUR_PAY_C,
+      </if>
+      <if test="birthInsurC != null" >
+        BIRTH_INSUR_C,
+      </if>
+      <if test="personIncomeTax != null" >
+        PERSON_INCOME_TAX,
+      </if>
+      <if test="remarks != null" >
+        REMARKS,
+      </if>
+      <if test="pensonPay != null" >
+        PENSON_PAY,
+      </if>
+      <if test="companyPay != null" >
+        COMPANY_PAY,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="empId != null" >
+        #{empId,jdbcType=DECIMAL},
+      </if>
+      <if test="yearMonth != null" >
+        #{yearMonth,jdbcType=DECIMAL},
+      </if>
+      <if test="monSal != null" >
+        #{monSal,jdbcType=DECIMAL},
+      </if>
+      <if test="otherSal != null" >
+        #{otherSal,jdbcType=DECIMAL},
+      </if>
+      <if test="deductSal != null" >
+        #{deductSal,jdbcType=DECIMAL},
+      </if>
+      <if test="grossPay != null" >
+        #{grossPay,jdbcType=DECIMAL},
+      </if>
+      <if test="actualPay != null" >
+        #{actualPay,jdbcType=DECIMAL},
+      </if>
+      <if test="empBankCard != null" >
+        #{empBankCard,jdbcType=DECIMAL},
+      </if>
+      <if test="isGrant != null" >
+        #{isGrant,jdbcType=DECIMAL},
+      </if>
+      <if test="grantTime != null" >
+        #{grantTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="grantEmpid != null" >
+        #{grantEmpid,jdbcType=DECIMAL},
+      </if>
+      <if test="penInsurPay != null" >
+        #{penInsurPay,jdbcType=DECIMAL},
+      </if>
+      <if test="medInsurPay != null" >
+        #{medInsurPay,jdbcType=DECIMAL},
+      </if>
+      <if test="unempInsurPay != null" >
+        #{unempInsurPay,jdbcType=DECIMAL},
+      </if>
+      <if test="basHousProFundPay != null" >
+        #{basHousProFundPay,jdbcType=DECIMAL},
+      </if>
+      <if test="penInsurPayC != null" >
+        #{penInsurPayC,jdbcType=DECIMAL},
+      </if>
+      <if test="medInsurPayC != null" >
+        #{medInsurPayC,jdbcType=DECIMAL},
+      </if>
+      <if test="unempInsurPayC != null" >
+        #{unempInsurPayC,jdbcType=DECIMAL},
+      </if>
+      <if test="basHousProFundPayC != null" >
+        #{basHousProFundPayC,jdbcType=DECIMAL},
+      </if>
+      <if test="empInjuryInsurPayC != null" >
+        #{empInjuryInsurPayC,jdbcType=DECIMAL},
+      </if>
+      <if test="birthInsurC != null" >
+        #{birthInsurC,jdbcType=DECIMAL},
+      </if>
+      <if test="personIncomeTax != null" >
+        #{personIncomeTax,jdbcType=DECIMAL},
+      </if>
+      <if test="remarks != null" >
+        #{remarks,jdbcType=VARCHAR},
+      </if>
+      <if test="pensonPay != null" >
+        #{pensonPay,jdbcType=DECIMAL},
+      </if>
+      <if test="companyPay != null" >
+        #{companyPay,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wage.model.HisSalary" >
+    update HIS_SALARY
+    <set >
+      <if test="monSal != null" >
+        MON_SAL = #{monSal,jdbcType=DECIMAL},
+      </if>
+      <if test="otherSal != null" >
+        OTHER_SAL = #{otherSal,jdbcType=DECIMAL},
+      </if>
+      <if test="deductSal != null" >
+        DEDUCT_SAL = #{deductSal,jdbcType=DECIMAL},
+      </if>
+      <if test="grossPay != null" >
+        GROSS_PAY = #{grossPay,jdbcType=DECIMAL},
+      </if>
+      <if test="actualPay != null" >
+        ACTUAL_PAY = #{actualPay,jdbcType=DECIMAL},
+      </if>
+      <if test="empBankCard != null" >
+        EMP_BANK_CARD = #{empBankCard,jdbcType=DECIMAL},
+      </if>
+      <if test="isGrant != null" >
+        IS_GRANT = #{isGrant,jdbcType=DECIMAL},
+      </if>
+      <if test="grantTime != null" >
+        GRANT_TIME = #{grantTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="grantEmpid != null" >
+        GRANT_EMPID = #{grantEmpid,jdbcType=DECIMAL},
+      </if>
+      <if test="penInsurPay != null" >
+        PEN_INSUR_PAY = #{penInsurPay,jdbcType=DECIMAL},
+      </if>
+      <if test="medInsurPay != null" >
+        MED_INSUR_PAY = #{medInsurPay,jdbcType=DECIMAL},
+      </if>
+      <if test="unempInsurPay != null" >
+        UNEMP_INSUR_PAY = #{unempInsurPay,jdbcType=DECIMAL},
+      </if>
+      <if test="basHousProFundPay != null" >
+        BAS_HOUS_PRO_FUND_PAY = #{basHousProFundPay,jdbcType=DECIMAL},
+      </if>
+      <if test="penInsurPayC != null" >
+        PEN_INSUR_PAY_C = #{penInsurPayC,jdbcType=DECIMAL},
+      </if>
+      <if test="medInsurPayC != null" >
+        MED_INSUR_PAY_C = #{medInsurPayC,jdbcType=DECIMAL},
+      </if>
+      <if test="unempInsurPayC != null" >
+        UNEMP_INSUR_PAY_C = #{unempInsurPayC,jdbcType=DECIMAL},
+      </if>
+      <if test="basHousProFundPayC != null" >
+        BAS_HOUS_PRO_FUND_PAY_C = #{basHousProFundPayC,jdbcType=DECIMAL},
+      </if>
+      <if test="empInjuryInsurPayC != null" >
+        EMP_INJURY_INSUR_PAY_C = #{empInjuryInsurPayC,jdbcType=DECIMAL},
+      </if>
+      <if test="birthInsurC != null" >
+        BIRTH_INSUR_C = #{birthInsurC,jdbcType=DECIMAL},
+      </if>
+      <if test="personIncomeTax != null" >
+        PERSON_INCOME_TAX = #{personIncomeTax,jdbcType=DECIMAL},
+      </if>
+      <if test="remarks != null" >
+        REMARKS = #{remarks,jdbcType=VARCHAR},
+      </if>
+      <if test="pensonPay != null" >
+        PENSON_PAY = #{pensonPay,jdbcType=DECIMAL},
+      </if>
+      <if test="companyPay != null" >
+        COMPANY_PAY = #{companyPay,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where EMP_ID = #{empId,jdbcType=DECIMAL}
+      and YEAR_MONTH = #{yearMonth,jdbcType=DECIMAL}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.wage.model.HisSalary" >
+    update HIS_SALARY
+    set MON_SAL = #{monSal,jdbcType=DECIMAL},
+      OTHER_SAL = #{otherSal,jdbcType=DECIMAL},
+      DEDUCT_SAL = #{deductSal,jdbcType=DECIMAL},
+      GROSS_PAY = #{grossPay,jdbcType=DECIMAL},
+      ACTUAL_PAY = #{actualPay,jdbcType=DECIMAL},
+      EMP_BANK_CARD = #{empBankCard,jdbcType=DECIMAL},
+      IS_GRANT = #{isGrant,jdbcType=DECIMAL},
+      GRANT_TIME = #{grantTime,jdbcType=TIMESTAMP},
+      GRANT_EMPID = #{grantEmpid,jdbcType=DECIMAL},
+      PEN_INSUR_PAY = #{penInsurPay,jdbcType=DECIMAL},
+      MED_INSUR_PAY = #{medInsurPay,jdbcType=DECIMAL},
+      UNEMP_INSUR_PAY = #{unempInsurPay,jdbcType=DECIMAL},
+      BAS_HOUS_PRO_FUND_PAY = #{basHousProFundPay,jdbcType=DECIMAL},
+      PEN_INSUR_PAY_C = #{penInsurPayC,jdbcType=DECIMAL},
+      MED_INSUR_PAY_C = #{medInsurPayC,jdbcType=DECIMAL},
+      UNEMP_INSUR_PAY_C = #{unempInsurPayC,jdbcType=DECIMAL},
+      BAS_HOUS_PRO_FUND_PAY_C = #{basHousProFundPayC,jdbcType=DECIMAL},
+      EMP_INJURY_INSUR_PAY_C = #{empInjuryInsurPayC,jdbcType=DECIMAL},
+      BIRTH_INSUR_C = #{birthInsurC,jdbcType=DECIMAL},
+      PERSON_INCOME_TAX = #{personIncomeTax,jdbcType=DECIMAL},
+      REMARKS = #{remarks,jdbcType=VARCHAR},
+      PENSON_PAY = #{pensonPay,jdbcType=DECIMAL},
+      COMPANY_PAY = #{companyPay,jdbcType=DECIMAL}
+    where EMP_ID = #{empId,jdbcType=DECIMAL}
+      and YEAR_MONTH = #{yearMonth,jdbcType=DECIMAL}
+  </update>
+  <select id="findBySearch" resultMap="BaseResultMapExt" parameterType="com.wage.model.ext.HisSalaryDataExt">
+    SELECT A.*,B.EMP_NAME,C.DEPART_NAME,D.EMP_NAME AS GRANT_NAME
+    FROM HIS_SALARY A LEFT JOIN EMP_DIC_BASIC_INFO B ON A.EMP_ID = B.EMP_ID
+    LEFT JOIN EMP_DEPARTMENT C ON B.DEPART_ID = C.DEPART_ID and B.DEPART_RAND = C.DEPART_RAND
+    LEFT JOIN EMP_DIC_BASIC_INFO D ON A.GRANT_EMPID = D.EMP_ID
+    WHERE 1=1
+    <if test="empName != null and empName != ''" >
+      AND (B.EMP_NAME LIKE CONCAT(CONCAT('%',#{empName,jdbcType=VARCHAR}),'%')
+      OR A.EMP_ID LIKE CONCAT(CONCAT('%',#{empName,jdbcType=VARCHAR}),'%'))
+    </if>
+    <if test="yearMonth != null and yearMonth != ''" >
+      AND A.YEAR_MONTH = #{yearMonth,jdbcType=DECIMAL}
+    </if>
+    <if test="departId != null and departId != ''" >
+      AND B.DEPART_ID = #{departId,jdbcType=DECIMAL}
+    </if>
+    <if test="monSal != null and monSal != ''" >
+      AND A.MON_SAL = #{monSal,jdbcType=DECIMAL}
+    </if>
+    <if test="otherSal != null and otherSal != ''" >
+      AND A.OTHER_SAL = #{otherSal,jdbcType=DECIMAL}
+    </if>
+    <if test="deductSal != null and deductSal != ''" >
+      AND A.DEDUCT_SAL = #{deductSal,jdbcType=DECIMAL}
+    </if>
+    <if test="grossPayMax != null and grossPayMin != null and grossPayMax != '' and grossPayMin != ''" >
+      AND (A.GROSS_PAY BETWEEN #{grossPayMax,jdbcType=DECIMAL} AND #{grossPayMin,jdbcType=DECIMAL}
+      OR A.GROSS_PAY BETWEEN #{grossPayMin,jdbcType=DECIMAL} AND #{grossPayMax,jdbcType=DECIMAL})
+    </if>
+    <if test="actualPayMax != null and actualPayMin != null and actualPayMax != '' and actualPayMin != ''" >
+      AND (A.ACTUAL_PAY BETWEEN #{actualPayMax,jdbcType=DECIMAL} AND #{actualPayMin,jdbcType=DECIMAL}
+      OR A.ACTUAL_PAY BETWEEN #{actualPayMin,jdbcType=DECIMAL} AND #{actualPayMax,jdbcType=DECIMAL})
+    </if>
+    <if test="isGrant != null" >
+      AND A.IS_GRANT = #{isGrant,jdbcType=DECIMAL}
+    </if>
+    <if test="grantTimeStart != null and grantTimeEnd != null" >
+      AND (A.GRANT_TIME BETWEEN #{grantTimeStart,jdbcType=TIMESTAMP} AND #{grantTimeEnd,jdbcType=TIMESTAMP}
+      OR A.GRANT_TIME BETWEEN #{grantTimeEnd,jdbcType=TIMESTAMP} AND #{grantTimeStart,jdbcType=TIMESTAMP})
+    </if>
+    <if test="grantEmpid != null" >
+      AND (D.EMP_NAME LIKE CONCAT(CONCAT('%',#{grantEmpid,jdbcType=VARCHAR}),'%')
+      OR A.GRANT_EMPID LIKE CONCAT(CONCAT('%',#{grantEmpid,jdbcType=VARCHAR}),'%'))
+    </if>
+    <if test="personIncomeTaxMax != null and personIncomeTaxMin != null and personIncomeTaxMax != '' and personIncomeTaxMin != ''" >
+      AND (A.PERSON_INCOME_TAX BETWEEN #{personIncomeTaxMax,jdbcType=DECIMAL} AND #{personIncomeTaxMin,jdbcType=DECIMAL}
+      OR A.PERSON_INCOME_TAX BETWEEN #{personIncomeTaxMin,jdbcType=DECIMAL} AND #{personIncomeTaxMax,jdbcType=DECIMAL})
+    </if>
+    <if test="sort == null or order == null or sort == '' or order == ''">
+      ORDER BY A.YEAR_MONTH DESC,A.EMP_ID ASC
+    </if>
+    <if test="sort != null and order != null and sort != '' and order != ''">
+      <if test="order == 'asc'">
+        <if test="sort == 'monSal'" >
+          ORDER BY A.MON_SAL ASC,A.EMP_ID ASC
+        </if>
+        <if test="sort == 'otherSal'" >
+          ORDER BY A.OTHER_SAL ASC,A.EMP_ID ASC
+        </if>
+        <if test="sort == 'deductSal'" >
+          ORDER BY A.DEDUCT_SAL ASC,A.EMP_ID ASC
+        </if>
+        <if test="sort == 'grossPay'" >
+          ORDER BY A.GROSS_PAY ASC,A.EMP_ID ASC
+        </if>
+        <if test="sort == 'actualPay'" >
+          ORDER BY A.ACTUAL_PAY ASC,A.EMP_ID ASC
+        </if>
+        <if test="sort == 'grantTime'" >
+          ORDER BY A.GRANT_TIME ASC,A.EMP_ID ASC
+        </if>
+        <if test="sort == 'personIncomeTax'" >
+          ORDER BY A.PERSON_INCOME_TAX ASC,A.EMP_ID ASC
+        </if>
+      </if>
+
+      <if test="order == 'desc'">
+        <if test="sort == 'monSal'" >
+          ORDER BY A.MON_SAL DESC,A.EMP_ID DESC
+        </if>
+        <if test="sort == 'otherSal'" >
+          ORDER BY A.OTHER_SAL DESC,A.EMP_ID DESC
+        </if>
+        <if test="sort == 'deductSal'" >
+          ORDER BY A.DEDUCT_SAL DESC,A.EMP_ID DESC
+        </if>
+        <if test="sort == 'grossPay'" >
+          ORDER BY A.GROSS_PAY DESC,A.EMP_ID DESC
+        </if>
+        <if test="sort == 'actualPay'" >
+          ORDER BY A.ACTUAL_PAY DESC,A.EMP_ID DESC
+        </if>
+        <if test="sort == 'grantTime'" >
+          ORDER BY A.GRANT_TIME DESC,A.EMP_ID DESC
+        </if>
+        <if test="sort == 'personIncomeTax'" >
+          ORDER BY A.PERSON_INCOME_TAX DESC,A.EMP_ID DESC
+        </if>
+      </if>
+    </if>
+  </select>
+  <insert id="insertHisSalary" parameterType="java.lang.Integer">
+    INSERT INTO HIS_SALARY(EMP_ID, YEAR_MONTH, MON_SAL,
+      OTHER_SAL, DEDUCT_SAL, GROSS_PAY,
+      ACTUAL_PAY, EMP_BANK_CARD, IS_GRANT,
+      GRANT_TIME, GRANT_EMPID, PEN_INSUR_PAY,
+      MED_INSUR_PAY, UNEMP_INSUR_PAY, BAS_HOUS_PRO_FUND_PAY,
+      PEN_INSUR_PAY_C, MED_INSUR_PAY_C, UNEMP_INSUR_PAY_C,
+      BAS_HOUS_PRO_FUND_PAY_C, EMP_INJURY_INSUR_PAY_C,
+      BIRTH_INSUR_C, PERSON_INCOME_TAX, REMARKS,
+      PENSON_PAY, COMPANY_PAY
+      )
+     SELECT A.EMP_ID, #{yearMonth,jdbcType=DECIMAL}, D.TYPE_OF_WAGE,
+      (case when B.OTHER_SAL IS NULL then 0 else B.OTHER_SAL end) OTHER_SAL,
+      (case when C.DEDUCT_SAL IS NULL then 0 else C.DEDUCT_SAL end) DEDUCT_SAL,
+      D.TYPE_OF_WAGE+(case when B.OTHER_SAL IS NULL then 0 else B.OTHER_SAL end)-(case when C.DEDUCT_SAL IS NULL then 0 else C.DEDUCT_SAL end),
+      NULL, A.EMP_BANK_CARD, 0,
+      NULL, NULL, 0,
+      0, 0, 0,
+      0, 0, 0,
+      0, 0,
+      0, 0, NULL,
+      0, 0
+      FROM EMP_DIC_BASIC_INFO A
+      LEFT JOIN EMP_MON_OTHER_SAL B ON A.EMP_ID = B.EMP_ID AND B.YEAR_MONTH = #{yearMonth,jdbcType=DECIMAL}
+      LEFT JOIN EMP_MON_DEDUCT_SAL C ON A.EMP_ID = C.EMP_ID AND C.YEAR_MONTH = #{yearMonth,jdbcType=DECIMAL}
+      LEFT JOIN HIS_SAL_CHANGE D ON A.EMP_ID = D.EMP_ID AND D.CHANGE_TIME = #{yearMonth,jdbcType=DECIMAL}
+      WHERE (A.EMP_ID,#{yearMonth,jdbcType=DECIMAL}) NOT IN (SELECT EMP_ID,YEAR_MONTH FROM HIS_SALARY)
+  </insert>
+
+  <update id="updateHisSalaryList" parameterType="java.util.List">
+    <foreach collection="list" item="item" index="index" open="begin" close=";end;" separator=";">
+      update HIS_SALARY
+      set ACTUAL_PAY = #{item.actualPay,jdbcType=DECIMAL},
+      PEN_INSUR_PAY = #{item.penInsurPay,jdbcType=DECIMAL},
+      MED_INSUR_PAY = #{item.medInsurPay,jdbcType=DECIMAL},
+      UNEMP_INSUR_PAY = #{item.unempInsurPay,jdbcType=DECIMAL},
+      BAS_HOUS_PRO_FUND_PAY = #{item.basHousProFundPay,jdbcType=DECIMAL},
+      PEN_INSUR_PAY_C = #{item.penInsurPayC,jdbcType=DECIMAL},
+      MED_INSUR_PAY_C = #{item.medInsurPayC,jdbcType=DECIMAL},
+      UNEMP_INSUR_PAY_C = #{item.unempInsurPayC,jdbcType=DECIMAL},
+      BAS_HOUS_PRO_FUND_PAY_C = #{item.basHousProFundPayC,jdbcType=DECIMAL},
+      EMP_INJURY_INSUR_PAY_C = #{item.empInjuryInsurPayC,jdbcType=DECIMAL},
+      BIRTH_INSUR_C = #{item.birthInsurC,jdbcType=DECIMAL},
+      PERSON_INCOME_TAX = #{item.personIncomeTax,jdbcType=DECIMAL},
+      PENSON_PAY = #{item.pensonPay,jdbcType=DECIMAL},
+      COMPANY_PAY = #{item.companyPay,jdbcType=DECIMAL}
+      where EMP_ID = #{item.empId,jdbcType=DECIMAL}
+      and YEAR_MONTH = #{item.yearMonth,jdbcType=DECIMAL}
+    </foreach>
+  </update>
+  <select id="findByMonth" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+    SELECT *
+    FROM HIS_SALARY
+    WHERE YEAR_MONTH = #{yearMonth,jdbcType=DECIMAL}
+  </select>
+  <select id="findAllMonth" resultType="Integer">
+    SELECT distinct YEAR_MONTH
+    FROM HIS_SALARY
+   order by YEAR_MONTH DESC
+  </select>
+  <select id="findDataChart" resultMap="ChartResultMap">
+    SELECT *
+    FROM (  SELECT YEAR_MONTH,
+    (CASE WHEN SUM (MON_SAL) IS NULL THEN 0 ELSE SUM (MON_SAL) END)
+    AS MON_SAL_SUM,
+    (CASE
+    WHEN SUM (OTHER_SAL) IS NULL THEN 0
+    ELSE SUM (OTHER_SAL)
+    END)
+    AS OTHER_SAL_SUM,
+    (CASE
+    WHEN SUM (DEDUCT_SAL) IS NULL THEN 0
+    ELSE SUM (DEDUCT_SAL)
+    END)
+    AS DEDUCT_SAL_SUM,
+    (CASE
+    WHEN SUM (GROSS_PAY) IS NULL THEN 0
+    ELSE SUM (GROSS_PAY)
+    END)
+    AS GROSS_PAY_SUM,
+    (CASE
+    WHEN SUM (ACTUAL_PAY) IS NULL THEN 0
+    ELSE SUM (ACTUAL_PAY)
+    END)
+    AS ACTUAL_PAY_SUM
+    FROM HIS_SALARY
+    GROUP BY YEAR_MONTH
+    ORDER BY YEAR_MONTH DESC)
+    WHERE ROWNUM &lt;= 6
+    ORDER BY YEAR_MONTH
+  </select>
+  <select id="findDataPie" resultMap="ChartResultMap">
+    SELECT *
+    FROM (
+    SELECT
+    (CASE
+    WHEN SUM (MON_SAL) IS NULL THEN 0
+    ELSE SUM (MON_SAL) END)
+    AS MON_SAL_SUM,
+    (CASE
+    WHEN SUM (OTHER_SAL) IS NULL THEN 0
+    ELSE SUM (OTHER_SAL)
+    END)
+    AS OTHER_SAL_SUM,
+    (CASE
+    WHEN SUM (DEDUCT_SAL) IS NULL THEN 0
+    ELSE SUM (DEDUCT_SAL)
+    END)
+    AS DEDUCT_SAL_SUM
+    FROM HIS_SALARY
+    GROUP BY YEAR_MONTH
+    ORDER BY YEAR_MONTH DESC)
+    WHERE ROWNUM &lt;= 1
+  </select>
+  <select id="findTotalData" resultMap="BaseResultMap">
+    SELECT (CASE WHEN SUM (MON_SAL) IS NULL THEN 0 ELSE SUM (MON_SAL) END)
+    AS MON_SAL,
+    (CASE
+    WHEN SUM (OTHER_SAL) IS NULL THEN 0
+    ELSE SUM (OTHER_SAL)
+    END)
+    AS OTHER_SAL,
+    (CASE
+    WHEN SUM (DEDUCT_SAL) IS NULL THEN 0
+    ELSE SUM (DEDUCT_SAL)
+    END)
+    AS DEDUCT_SAL,
+    (CASE
+    WHEN SUM (GROSS_PAY) IS NULL THEN 0
+    ELSE SUM (GROSS_PAY)
+    END)
+    AS GROSS_PAY,
+    (CASE
+    WHEN SUM (ACTUAL_PAY) IS NULL THEN 0
+    ELSE SUM (ACTUAL_PAY)
+    END)
+    AS ACTUAL_PAY,
+    (CASE
+    WHEN SUM (PEN_INSUR_PAY) IS NULL THEN 0
+    ELSE SUM (PEN_INSUR_PAY)
+    END)
+    AS PEN_INSUR_PAY,
+    (CASE
+    WHEN SUM (MED_INSUR_PAY) IS NULL THEN 0
+    ELSE SUM (MED_INSUR_PAY)
+    END)
+    AS MED_INSUR_PAY,
+    (CASE
+    WHEN SUM (UNEMP_INSUR_PAY) IS NULL THEN 0
+    ELSE SUM (UNEMP_INSUR_PAY)
+    END)
+    AS UNEMP_INSUR_PAY,
+    (CASE
+    WHEN SUM (BAS_HOUS_PRO_FUND_PAY) IS NULL THEN 0
+    ELSE SUM (BAS_HOUS_PRO_FUND_PAY)
+    END)
+    AS BAS_HOUS_PRO_FUND_PAY,
+    (CASE
+    WHEN SUM (PEN_INSUR_PAY_C) IS NULL THEN 0
+    ELSE SUM (PEN_INSUR_PAY_C)
+    END)
+    AS PEN_INSUR_PAY_C,
+    (CASE
+    WHEN SUM (MED_INSUR_PAY_C) IS NULL THEN 0
+    ELSE SUM (MED_INSUR_PAY_C)
+    END)
+    AS MED_INSUR_PAY_C,
+    (CASE
+    WHEN SUM (UNEMP_INSUR_PAY_C) IS NULL THEN 0
+    ELSE SUM (UNEMP_INSUR_PAY_C)
+    END)
+    AS UNEMP_INSUR_PAY_C,
+    (CASE
+    WHEN SUM (BAS_HOUS_PRO_FUND_PAY_C) IS NULL THEN 0
+    ELSE SUM (BAS_HOUS_PRO_FUND_PAY_C)
+    END)
+    AS BAS_HOUS_PRO_FUND_PAY_C,
+    (CASE
+    WHEN SUM (EMP_INJURY_INSUR_PAY_C) IS NULL THEN 0
+    ELSE SUM (EMP_INJURY_INSUR_PAY_C)
+    END)
+    AS EMP_INJURY_INSUR_PAY_C,
+    (CASE
+    WHEN SUM (BIRTH_INSUR_C) IS NULL THEN 0
+    ELSE SUM (BIRTH_INSUR_C)
+    END)
+    AS BIRTH_INSUR_C,
+    (CASE
+    WHEN SUM (PERSON_INCOME_TAX) IS NULL THEN 0
+    ELSE SUM (PERSON_INCOME_TAX)
+    END)
+    AS PERSON_INCOME_TAX,
+    (CASE
+    WHEN SUM (PENSON_PAY) IS NULL THEN 0
+    ELSE SUM (PENSON_PAY)
+    END)
+    AS PENSON_PAY,
+    (CASE
+    WHEN SUM (COMPANY_PAY) IS NULL THEN 0
+    ELSE SUM (COMPANY_PAY)
+    END)
+    AS COMPANY_PAY
+    FROM HIS_SALARY
+    WHERE YEAR_MONTH = #{yearMonth,jdbcType=DECIMAL}
+    GROUP BY YEAR_MONTH
+  </select>
+</mapper>

@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wage.biz.mybatis.EmpDicBasicInfoMapper" >
+  <!--<cache eviction="LRU" type="com.wage.redis.RedisCache" />-->
+  <cache type="org.mybatis.caches.ignite.IgniteCacheAdapter" />
+  <resultMap id="BaseResultMap" type="com.wage.model.EmpDicBasicInfo" >
+    <id column="EMP_ID" property="empId" jdbcType="DECIMAL" />
+    <result column="EMP_NAME" property="empName" jdbcType="VARCHAR" />
+    <result column="EMP_SEX" property="empSex" jdbcType="VARCHAR" />
+    <result column="EMP_ADDRESS" property="empAddress" jdbcType="VARCHAR" />
+    <result column="EMP_TELL" property="empTell" jdbcType="DECIMAL" />
+    <result column="EMP_BANK_CARD" property="empBankCard" jdbcType="VARCHAR" />
+    <result column="EMP_IDNUM" property="empIdnum" jdbcType="VARCHAR" />
+    <result column="EMP_EDU" property="empEdu" jdbcType="VARCHAR" />
+    <result column="EMP_SCHOOL" property="empSchool" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="CREATE_EMPID" property="createEmpid" jdbcType="DECIMAL" />
+    <result column="MODIFY_TIME" property="modifyTime" jdbcType="TIMESTAMP" />
+    <result column="MODIFY_EMPID" property="modifyEmpid" jdbcType="DECIMAL" />
+    <result column="DEPART_ID" property="departId" jdbcType="DECIMAL" />
+    <result column="DEPART_RAND" property="departRand" jdbcType="DECIMAL" />
+  </resultMap>
+  <resultMap id="BaseResultMapExt" type="com.wage.model.ext.EmpDicBasicInfoExt" extends="BaseResultMap">
+    <result column="CREATE_EMP_NAME" property="createEmpName" jdbcType="VARCHAR" />
+    <result column="DEPART_NAME" property="departName" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    EMP_ID, EMP_NAME, EMP_SEX, EMP_ADDRESS, EMP_TELL, EMP_BANK_CARD, EMP_IDNUM, EMP_EDU, 
+    EMP_SCHOOL, CREATE_TIME, CREATE_EMPID, MODIFY_TIME, MODIFY_EMPID,
+    DEPART_ID, DEPART_RAND
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from EMP_DIC_BASIC_INFO
+    where EMP_ID = #{empId,jdbcType=DECIMAL}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from EMP_DIC_BASIC_INFO
+    where EMP_ID = #{empId,jdbcType=DECIMAL}
+  </delete>
+  <insert id="insert" parameterType="com.wage.model.EmpDicBasicInfo" >
+    insert into EMP_DIC_BASIC_INFO (EMP_ID, EMP_NAME, EMP_SEX, 
+      EMP_ADDRESS, EMP_TELL, EMP_BANK_CARD, 
+      EMP_IDNUM, EMP_EDU, EMP_SCHOOL, 
+      CREATE_TIME, CREATE_EMPID,
+      MODIFY_TIME, MODIFY_EMPID, DEPART_ID, DEPART_RAND)
+    SELECT (case when MAX(EMP_ID) IS NULL then 100001 else MAX(EMP_ID)+1 end), #{empName,jdbcType=VARCHAR}, #{empSex,jdbcType=VARCHAR},
+      #{empAddress,jdbcType=VARCHAR}, #{empTell,jdbcType=DECIMAL}, #{empBankCard,jdbcType=VARCHAR},
+      #{empIdnum,jdbcType=VARCHAR}, #{empEdu,jdbcType=VARCHAR}, #{empSchool,jdbcType=VARCHAR}, 
+      SYSDATE, #{createEmpid,jdbcType=DECIMAL},
+      SYSDATE, #{modifyEmpid,jdbcType=DECIMAL}, #{departId,jdbcType=DECIMAL},
+      #{departRand,jdbcType=DECIMAL}
+      FROM EMP_DIC_BASIC_INFO
+  </insert>
+  <select id="selectMaxId" resultType="java.lang.Integer">
+    SELECT MAX(EMP_ID)
+    FROM EMP_DIC_BASIC_INFO
+  </select>
+  <insert id="insertSelective" parameterType="com.wage.model.EmpDicBasicInfo" >
+    insert into EMP_DIC_BASIC_INFO
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="empId != null" >
+        EMP_ID,
+      </if>
+      <if test="empName != null" >
+        EMP_NAME,
+      </if>
+      <if test="empSex != null" >
+        EMP_SEX,
+      </if>
+      <if test="empAddress != null" >
+        EMP_ADDRESS,
+      </if>
+      <if test="empTell != null" >
+        EMP_TELL,
+      </if>
+      <if test="empBankCard != null" >
+        EMP_BANK_CARD,
+      </if>
+      <if test="empIdnum != null" >
+        EMP_IDNUM,
+      </if>
+      <if test="empEdu != null" >
+        EMP_EDU,
+      </if>
+      <if test="empSchool != null" >
+        EMP_SCHOOL,
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME,
+      </if>
+      <if test="createEmpid != null" >
+        CREATE_EMPID,
+      </if>
+      <if test="modifyTime != null" >
+        MODIFY_TIME,
+      </if>
+      <if test="modifyEmpid != null" >
+        MODIFY_EMPID,
+      </if>
+      <if test="departId != null" >
+        DEPART_ID,
+      </if>
+      <if test="departRand != null" >
+        DEPART_RAND,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="empId != null" >
+        #{empId,jdbcType=DECIMAL},
+      </if>
+      <if test="empName != null" >
+        #{empName,jdbcType=VARCHAR},
+      </if>
+      <if test="empSex != null" >
+        #{empSex,jdbcType=VARCHAR},
+      </if>
+      <if test="empAddress != null" >
+        #{empAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="empTell != null" >
+        #{empTell,jdbcType=DECIMAL},
+      </if>
+      <if test="empBankCard != null" >
+        #{empBankCard,jdbcType=VARCHAR},
+      </if>
+      <if test="empIdnum != null" >
+        #{empIdnum,jdbcType=VARCHAR},
+      </if>
+      <if test="empEdu != null" >
+        #{empEdu,jdbcType=VARCHAR},
+      </if>
+      <if test="empSchool != null" >
+        #{empSchool,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createEmpid != null" >
+        #{createEmpid,jdbcType=DECIMAL},
+      </if>
+      <if test="modifyTime != null" >
+        #{modifyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifyEmpid != null" >
+        #{modifyEmpid,jdbcType=DECIMAL},
+      </if>
+      <if test="departId != null" >
+        #{departId,jdbcType=DECIMAL},
+      </if>
+      <if test="departRand != null" >
+        #{departRand,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wage.model.EmpDicBasicInfo" >
+    update EMP_DIC_BASIC_INFO
+    <set >
+      <if test="empName != null" >
+        EMP_NAME = #{empName,jdbcType=VARCHAR},
+      </if>
+      <if test="empSex != null" >
+        EMP_SEX = #{empSex,jdbcType=VARCHAR},
+      </if>
+      <if test="empAddress != null" >
+        EMP_ADDRESS = #{empAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="empTell != null" >
+        EMP_TELL = #{empTell,jdbcType=DECIMAL},
+      </if>
+      <if test="empBankCard != null" >
+        EMP_BANK_CARD = #{empBankCard,jdbcType=VARCHAR},
+      </if>
+      <if test="empIdnum != null" >
+        EMP_IDNUM = #{empIdnum,jdbcType=VARCHAR},
+      </if>
+      <if test="empEdu != null" >
+        EMP_EDU = #{empEdu,jdbcType=VARCHAR},
+      </if>
+      <if test="empSchool != null" >
+        EMP_SCHOOL = #{empSchool,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createEmpid != null" >
+        CREATE_EMPID = #{createEmpid,jdbcType=DECIMAL},
+      </if>
+      <if test="modifyTime != null" >
+        MODIFY_TIME = #{modifyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifyEmpid != null" >
+        MODIFY_EMPID = #{modifyEmpid,jdbcType=DECIMAL},
+      </if>
+      <if test="departId != null" >
+        DEPART_ID = #{departId,jdbcType=DECIMAL},
+      </if>
+      <if test="departRand != null" >
+        DEPART_RAND = #{departRand,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where EMP_ID = #{empId,jdbcType=DECIMAL}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.wage.model.EmpDicBasicInfo" >
+    update EMP_DIC_BASIC_INFO
+    set EMP_NAME = #{empName,jdbcType=VARCHAR},
+      EMP_SEX = #{empSex,jdbcType=VARCHAR},
+      EMP_ADDRESS = #{empAddress,jdbcType=VARCHAR},
+      EMP_TELL = #{empTell,jdbcType=DECIMAL},
+      EMP_BANK_CARD = #{empBankCard,jdbcType=VARCHAR},
+      EMP_IDNUM = #{empIdnum,jdbcType=VARCHAR},
+      EMP_EDU = #{empEdu,jdbcType=VARCHAR},
+      EMP_SCHOOL = #{empSchool,jdbcType=VARCHAR},
+      MODIFY_TIME = SYSDATE,
+      MODIFY_EMPID = #{modifyEmpid,jdbcType=DECIMAL},
+      DEPART_ID = #{departId,jdbcType=DECIMAL},
+      DEPART_RAND = #{departRand,jdbcType=DECIMAL}
+    where EMP_ID = #{empId,jdbcType=DECIMAL}
+  </update>
+  <select id="getBySearch" resultMap="BaseResultMapExt" >
+    SELECT A.*,B.EMP_NAME AS CREATE_EMP_NAME,C.DEPART_NAME AS DEPART_NAME
+    FROM EMP_DIC_BASIC_INFO A LEFT JOIN EMP_DIC_BASIC_INFO B ON A.CREATE_EMPID = B.EMP_ID
+    LEFT JOIN EMP_DEPARTMENT C ON A.DEPART_ID = C.DEPART_ID and A.DEPART_RAND = C.DEPART_RAND
+    WHERE 1=1
+    <if test="record.empName != null and record.empName != ''" >
+      AND (A.EMP_NAME LIKE CONCAT(CONCAT('%',#{record.empName,jdbcType=VARCHAR}),'%')
+      OR A.EMP_ID LIKE CONCAT(CONCAT('%',#{record.empName,jdbcType=VARCHAR}),'%'))
+    </if>
+    <if test="record.empSex != null and record.empSex != ''" >
+      AND A.EMP_SEX = #{record.empSex,jdbcType=VARCHAR}
+    </if>
+    <if test="record.empAddress != null and record.empAddress != ''" >
+      AND A.EMP_ADDRESS LIKE CONCAT(CONCAT('%',#{record.empAddress,jdbcType=VARCHAR}),'%')
+    </if>
+    <if test="record.empTell != null and record.empTell != ''" >
+      AND A.EMP_TELL = #{record.empTell,jdbcType=DECIMAL}
+    </if>
+    <if test="record.empBankCard != null and record.empBankCard != ''" >
+      AND A.EMP_BANK_CARD = #{record.empBankCard,jdbcType=VARCHAR}
+    </if>
+    <if test="record.empIdnum != null and record.empIdnum != ''" >
+      AND A.EMP_IDNUM = #{record.empIdnum,jdbcType=VARCHAR}
+    </if>
+    <if test="record.empEdu != null and record.empEdu != ''" >
+      AND A.EMP_EDU = #{record.empEdu,jdbcType=VARCHAR}
+    </if>
+    <if test="record.empSchool != null and record.empSchool != ''" >
+      AND A.EMP_SCHOOL = #{record.empSchool,jdbcType=VARCHAR}
+    </if>
+    <if test="record.departId != null and record.departId != ''" >
+      AND DEPART_ID = #{record.departId,jdbcType=DECIMAL}
+    </if>
+    <if test="record.departRand != null and record.departRand != ''" >
+      AND DEPART_RAND = #{record.departRand,jdbcType=DECIMAL}
+    </if>
+    <if test="record.startTime != null and record.endTime != null" >
+      AND (A.CREATE_TIME BETWEEN #{record.startTime,jdbcType=TIMESTAMP} AND #{record.endTime,jdbcType=TIMESTAMP}
+      OR A.CREATE_TIME BETWEEN #{record.endTime,jdbcType=TIMESTAMP} AND #{record.startTime,jdbcType=TIMESTAMP})
+    </if>
+    <if test="record.createEmpname != null and record.createEmpname !=''" >
+      AND B.EMP_NAME LIKE CONCAT(CONCAT('%',#{record.createEmpname,jdbcType=VARCHAR}),'%')
+    </if>
+    <if test="sort == null or order == null or sort == '' or order == ''">
+      ORDER BY A.EMP_ID
+    </if>
+    <if test="sort != null and order != null and sort != '' and order != ''">
+      <if test="order == 'asc'">
+        <if test="sort == 'createTime'" >
+          ORDER BY A.MODIFY_TIME ASC,A.EMP_ID ASC
+        </if>
+        <if test="sort == 'departId'" >
+          ORDER BY A.DEPART_ID ASC,A.EMP_ID ASC
+        </if>
+      </if>
+
+      <if test="order == 'desc'">
+        <if test="sort == 'createTime'" >
+          ORDER BY A.MODIFY_TIME DESC,A.EMP_ID DESC
+        </if>
+        <if test="sort == 'departId'" >
+          ORDER BY A.DEPART_ID DESC,A.EMP_ID DESC
+        </if>
+      </if>
+    </if>
+  </select>
+  <select id="findMaxId" resultType="java.lang.Integer">
+    SELECT MAX(EMP_ID)
+    FROM EMP_DIC_BASIC_INFO
+  </select>
+  <select id="findQuestionAns" resultMap="BaseResultMap" >
+    SELECT *
+    FROM EMP_DIC_BASIC_INFO
+    WHERE 1=1
+    <if test="empBankCard != null" >
+      AND EMP_BANK_CARD = #{empBankCard,jdbcType=VARCHAR}
+    </if>
+    <if test="empId != null" >
+      AND EMP_ID = #{empId,jdbcType=DECIMAL}
+    </if>
+    <if test="empIdnum != null" >
+      AND EMP_IDNUM = #{empIdnum,jdbcType=VARCHAR}
+    </if>
+  </select>
+
+  <select id="getNotAdmin" resultMap="BaseResultMapExt" >
+    SELECT A.*,B.EMP_NAME AS CREATE_EMP_NAME,C.DEPART_NAME AS DEPART_NAME
+    FROM EMP_DIC_BASIC_INFO A LEFT JOIN EMP_DIC_BASIC_INFO B ON A.CREATE_EMPID = B.EMP_ID
+    LEFT JOIN EMP_DEPARTMENT C ON A.DEPART_ID = C.DEPART_ID and A.DEPART_RAND = C.DEPART_RAND
+    LEFT JOIN EMP_DIC_PASSWORD D ON A.EMP_ID = D.EMP_ID
+    WHERE D.IS_ADMIN != 1 OR D.IS_ADMIN IS NULL
+  </select>
+</mapper>

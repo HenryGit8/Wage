@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wage.biz.mybatis.SysEmpNewSetMapper" >
+  <!--<cache eviction="LRU" type="com.wage.redis.RedisCache" />-->
+  <cache type="org.mybatis.caches.ignite.IgniteCacheAdapter" />
+  <resultMap id="BaseResultMap" type="com.wage.model.SysEmpNewSet" >
+    <id column="IS_ROLLER_GRAPH" property="isRollerGraph" jdbcType="DECIMAL" />
+    <id column="SERIAL_NUM" property="serialNum" jdbcType="DECIMAL" />
+    <result column="THEME_TEXT" property="themeText" jdbcType="VARCHAR" />
+    <result column="IMG_URL" property="imgUrl" jdbcType="VARCHAR" />
+    <result column="IMG_MD" property="imgMd" jdbcType="VARCHAR" />
+    <result column="IS_NETWORK_IMG" property="isNetworkImg" jdbcType="DECIMAL" />
+    <result column="NEW_URL" property="newUrl" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    IS_ROLLER_GRAPH, SERIAL_NUM, THEME_TEXT, IMG_URL, IMG_MD, IS_NETWORK_IMG, NEW_URL
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="com.wage.model.SysEmpNewSetKey" >
+    select
+    <include refid="Base_Column_List" />
+    from SYS_EMP_NEW_SET
+    where IS_ROLLER_GRAPH = #{isRollerGraph,jdbcType=DECIMAL}
+    and SERIAL_NUM = #{serialNum,jdbcType=DECIMAL}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="com.wage.model.SysEmpNewSetKey" >
+    delete from SYS_EMP_NEW_SET
+    where IS_ROLLER_GRAPH = #{isRollerGraph,jdbcType=DECIMAL}
+    and SERIAL_NUM = #{serialNum,jdbcType=DECIMAL}
+  </delete>
+  <insert id="insert" parameterType="com.wage.model.SysEmpNewSet" >
+    insert into SYS_EMP_NEW_SET (IS_ROLLER_GRAPH, SERIAL_NUM, THEME_TEXT,
+    IMG_URL, IMG_MD, IS_NETWORK_IMG,
+    NEW_URL)
+    values (#{isRollerGraph,jdbcType=DECIMAL}, #{serialNum,jdbcType=DECIMAL}, #{themeText,jdbcType=VARCHAR},
+    #{imgUrl,jdbcType=VARCHAR}, #{imgMd,jdbcType=VARCHAR}, #{isNetworkImg,jdbcType=DECIMAL},
+    #{newUrl,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.wage.model.SysEmpNewSet" >
+    insert into SYS_EMP_NEW_SET
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="isRollerGraph != null" >
+        IS_ROLLER_GRAPH,
+      </if>
+      <if test="serialNum != null" >
+        SERIAL_NUM,
+      </if>
+      <if test="themeText != null" >
+        THEME_TEXT,
+      </if>
+      <if test="imgUrl != null" >
+        IMG_URL,
+      </if>
+      <if test="imgMd != null" >
+        IMG_MD,
+      </if>
+      <if test="isNetworkImg != null" >
+        IS_NETWORK_IMG,
+      </if>
+      <if test="newUrl != null" >
+        NEW_URL,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="isRollerGraph != null" >
+        #{isRollerGraph,jdbcType=DECIMAL},
+      </if>
+      <if test="serialNum != null" >
+        #{serialNum,jdbcType=DECIMAL},
+      </if>
+      <if test="themeText != null" >
+        #{themeText,jdbcType=VARCHAR},
+      </if>
+      <if test="imgUrl != null" >
+        #{imgUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="imgMd != null" >
+        #{imgMd,jdbcType=VARCHAR},
+      </if>
+      <if test="isNetworkImg != null" >
+        #{isNetworkImg,jdbcType=DECIMAL},
+      </if>
+      <if test="newUrl != null" >
+        #{newUrl,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wage.model.SysEmpNewSet" >
+    update SYS_EMP_NEW_SET
+    <set >
+      <if test="themeText != null" >
+        THEME_TEXT = #{themeText,jdbcType=VARCHAR},
+      </if>
+      <if test="imgUrl != null" >
+        IMG_URL = #{imgUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="imgMd != null" >
+        IMG_MD = #{imgMd,jdbcType=VARCHAR},
+      </if>
+      <if test="isNetworkImg != null" >
+        IS_NETWORK_IMG = #{isNetworkImg,jdbcType=DECIMAL},
+      </if>
+      <if test="newUrl != null" >
+        NEW_URL = #{newUrl,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where IS_ROLLER_GRAPH = #{isRollerGraph,jdbcType=DECIMAL}
+    and SERIAL_NUM = #{serialNum,jdbcType=DECIMAL}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.wage.model.SysEmpNewSet" >
+    update SYS_EMP_NEW_SET
+    set THEME_TEXT = #{themeText,jdbcType=VARCHAR},
+      IMG_URL = #{imgUrl,jdbcType=VARCHAR},
+      IMG_MD = #{imgMd,jdbcType=VARCHAR},
+      IS_NETWORK_IMG = #{isNetworkImg,jdbcType=DECIMAL},
+      NEW_URL = #{newUrl,jdbcType=VARCHAR}
+    where IS_ROLLER_GRAPH = #{isRollerGraph,jdbcType=DECIMAL}
+      and SERIAL_NUM = #{serialNum,jdbcType=DECIMAL}
+  </update>
+  <select id="findAllNewImg" resultMap="BaseResultMap">
+    SELECT *
+    FROM SYS_EMP_NEW_SET
+    WHERE IS_ROLLER_GRAPH = 1
+    ORDER BY SERIAL_NUM
+  </select>
+  <select id="findAllNewNoImg" resultMap="BaseResultMap">
+    SELECT *
+    FROM SYS_EMP_NEW_SET
+    WHERE IS_ROLLER_GRAPH = 0
+    ORDER BY SERIAL_NUM
+  </select>
+  <delete id="removeAllNewNoImg">
+    DELETE FROM SYS_EMP_NEW_SET
+    WHERE IS_ROLLER_GRAPH = 0
+  </delete>
+  <insert id="saveAllNewNoImg" parameterType="java.util.List">
+    insert into SYS_EMP_NEW_SET (IS_ROLLER_GRAPH, SERIAL_NUM, THEME_TEXT,
+    IMG_URL, IMG_MD, IS_NETWORK_IMG,
+    NEW_URL)
+    SELECT A.*
+    FROM(
+    <foreach collection="list" item="item" index="index" separator="UNION ALL">
+      SELECT 0 as one, #{index} as two, #{item.themeText,jdbcType=VARCHAR} as three,
+      null as four, null as five, null as six, #{item.newUrl,jdbcType=VARCHAR} as seven
+      FROM DUAL
+    </foreach>
+    )A
+  </insert>
+  <delete id="removeAllNewImg">
+    DELETE FROM SYS_EMP_NEW_SET
+    WHERE IS_ROLLER_GRAPH = 1
+  </delete>
+  <insert id="saveAllNewImg" parameterType="java.util.List">
+    insert into SYS_EMP_NEW_SET (IS_ROLLER_GRAPH, SERIAL_NUM, THEME_TEXT,
+    IMG_URL, IMG_MD, IS_NETWORK_IMG,
+    NEW_URL)
+    SELECT A.*
+    FROM(
+    <foreach collection="list" item="item" index="index" separator="UNION ALL">
+      SELECT 1 as one , #{index} as two,  #{item.themeText,jdbcType=VARCHAR} as three,
+      #{item.imgUrl,jdbcType=VARCHAR} as four, #{item.imgMd,jdbcType=VARCHAR} as five, #{item.isNetworkImg,jdbcType=DECIMAL} as six,
+      #{item.newUrl,jdbcType=VARCHAR} seven
+      FROM DUAL
+    </foreach>
+    )A
+  </insert>
+</mapper>

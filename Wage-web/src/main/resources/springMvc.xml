@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+        http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+
+    <context:property-placeholder
+            ignore-resource-not-found="true" location="classpath*:application.properties" />
+    <!-- 自动扫描且只扫描@Controller -->
+    <context:component-scan base-package="com.wage.web.controller"> </context:component-scan>
+	<!-- 容器默认的DefaultServletHandler处理 所有静态内容与无RequestMapping处理的URL -->
+	<mvc:default-servlet-handler />
+
+    <mvc:annotation-driven conversion-service="customConversionService">
+        <mvc:message-converters register-defaults="false">
+            <ref bean="byteArrayHttpMessageConverter"/>
+            <ref bean="stringHttpMessageConverter"/>
+            <ref bean="fastJsonHttpMessageConverter"/>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+
+    <!--<bean id="cacheManager" class="org.apache.ignite.cache.spring.SpringCacheManager">
+        <property name="configuration">
+            <bean class="org.apache.ignite.configuration.IgniteConfiguration">
+                <property name="cacheConfiguration">
+                    <bean class="org.apache.ignite.configuration.CacheConfiguration">
+                        &lt;!&ndash; Cache mode. &ndash;&gt;
+                        <property name="cacheMode" value="PARTITIONED"/>
+                        <property name="backups" value="1"/>
+                        &lt;!&ndash; Cache name. &ndash;&gt;
+                        <property name="name" value="session-cache"/>
+                        &lt;!&ndash; Set up LRU eviction policy with 10000 sessions limit. &ndash;&gt;
+                        <property name="evictionPolicy">
+                            <bean class="org.apache.ignite.cache.eviction.lru.LruEvictionPolicy">
+                                <property name="maxSize" value="10000"/>
+                            </bean>
+                        </property>
+                    </bean>
+                </property>
+                <property name="peerClassLoadingEnabled" value="true"/>
+                <property name="discoverySpi">
+                    <bean class="org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi">
+                        <property name="localPort" value="49500"/>
+                        <property name="localPortRange" value="20"/>
+                        <property name="ipFinder">
+                            <bean class="org.apache.ignite.spi.discovery.tcp.ipfinder.zk.TcpDiscoveryZookeeperIpFinder">
+                                <property name="zkConnectionString" value="111.231.69.154:2181"/>
+                            </bean>
+                        </property>
+                    </bean>
+                </property>
+                <property name="communicationSpi">
+                    <bean class="org.apache.ignite.spi.communication.tcp.TcpCommunicationSpi">
+                        <property name="localPort" value="49100"/>
+                    </bean>
+                </property>
+            </bean>
+        </property>
+    </bean>-->
+    <bean id="customConversionService" class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+        <property name="converters">
+            <set>
+                <!-- 字符串格式的日期转换成Date格式的日期 -->
+                <bean class="com.wage.web.common.DateConverter"/>
+            </set>
+        </property>
+    </bean>
+    <bean id="byteArrayHttpMessageConverter" class="org.springframework.http.converter.ByteArrayHttpMessageConverter"/>
+    <bean id="stringHttpMessageConverter" class="org.springframework.http.converter.StringHttpMessageConverter">
+        <constructor-arg value="UTF-8"/>
+        <property name="supportedMediaTypes">
+            <list>
+                <value>text/html;charset=UTF-8</value>
+                <value>text/plain;charset=UTF-8</value>
+            </list>
+        </property>
+    </bean>
+    <!-- JSON支持，避免IE执行AJAX时,返回JSON出现下载文件 -->
+    <bean id="fastJsonHttpMessageConverter" class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter">
+        <property name="supportedMediaTypes">
+            <list>
+                <value>text/html;charset=UTF-8</value>
+                <value>text/plain;charset=UTF-8</value>
+                <value>application/json;charset=UTF-8</value>
+            </list>
+        </property>
+        <property name="fastJsonConfig" ref="fastJsonConfig"/>
+    </bean>
+    <bean id="fastJsonConfig" class="com.alibaba.fastjson.support.config.FastJsonConfig">
+        <property name="features">
+            <list>
+                <!-- DisableCircularReferenceDetect 解决循环引用问题，-->
+                <value>DisableCircularReferenceDetect</value>
+                <value>DisableFieldSmartMatch</value>
+            </list>
+        </property>
+        <property name="serializerFeatures">
+            <list>
+                <!-- Date的日期转换器 默认是﻿yyyy-MM-dd HH:mm:ss 格式-->
+                <value>WriteDateUseDateFormat</value>
+            </list>
+        </property>
+    </bean>
+
+	<!-- 文件上传下载配置 -->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<!-- 上传文件的大小为-1时，表示不限制文件大小 -->
+		<property name="maxUploadSize" value="-1"></property>
+		<property name="maxInMemorySize" value="-1"></property>
+		<property name="defaultEncoding" value="utf-8"></property>
+	</bean>
+	<!-- SPringmvc的拦截器 -->
+<!-- 	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/**"/>
+			<bean class="com.kingsoft.service.intercetor.IntercetorLogin"/>
+		</mvc:interceptor>
+	</mvc:interceptors>  -->
+
+	<!-- 定义JSP文件的位置 -->
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/views/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+
+    <!-- 方式二：使用MethodInvokingJobDetailFactoryBean，任务类可以不实现Job接口，通过targetMethod指定调用方法-->
+    <!-- 定义目标bean和bean中的方法 -->
+    <bean id="SpringQtzJob" class="com.wage.web.common.SpringQtz"/>
+    <bean id="SpringQtzJobMethod" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject">
+            <ref bean="SpringQtzJob"/>
+        </property>
+        <property name="targetMethod">  <!-- 要执行的方法名称 -->
+            <value>execute</value>
+        </property>
+    </bean>
+
+    <!-- ======================== 调度触发器 ======================== -->
+    <bean id="CronTriggerBean" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="SpringQtzJobMethod"></property>
+        <property name="cronExpression" value="0 0 12 1 * ?"></property>
+    </bean>
+
+    <!-- ======================== 调度工厂 ======================== -->
+    <bean id="SpringJobSchedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="triggers">
+            <list>
+                <ref bean="CronTriggerBean"/>
+            </list>
+        </property>
+    </bean>
+
+    <!-- ======================== spring容器启动后执行 ======================== -->
+    <!-- 当Spring容器启动完成后执行下面的这个Bean -->
+    <bean class="com.wage.web.common.BeanDefineConfigue"/>
+
+
+    <!--&lt;!&ndash; 定义无需Controller的url<->view直接映射 &ndash;&gt;-->
+    <mvc:view-controller path="/login/unauthorizedUrl" view-name="/unauthorizedUrl" />
+<!--
+
+    &lt;!&ndash; jedis 配置 &ndash;&gt;
+    <bean id="poolConfig" class="redis.clients.jedis.JedisPoolConfig" >
+        <property name="maxIdle" value="${redis.maxIdle}" />
+        <property name="maxWaitMillis" value="${redis.maxWait}" />
+        <property name="testOnBorrow" value="${redis.testOnBorrow}" />
+    </bean >
+
+    &lt;!&ndash; redis服务器中心 &ndash;&gt;
+    <bean id="connectionFactory"  class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory" >
+        <property name="poolConfig" ref="poolConfig" />
+        <property name="port" value="${redis.port}" />
+        <property name="hostName" value="${redis.host}" />
+        &lt;!&ndash; <property name="password" value="${redis.password}" /> &ndash;&gt;
+        <property name="timeout" value="${redis.timeout}" ></property>
+    </bean >
+    <bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate" >
+        <property name="connectionFactory" ref="connectionFactory" />
+        <property name="keySerializer" >
+            <bean class="org.springframework.data.redis.serializer.StringRedisSerializer" />
+        </property>
+        <property name="valueSerializer" >
+            <bean class="org.springframework.data.redis.serializer.JdkSerializationRedisSerializer" />
+        </property>
+    </bean >
+
+    &lt;!&ndash; cache配置 &ndash;&gt;
+    <bean id="methodCacheInterceptor" class="com.wage.web.interceptor.MethodCacheInterceptor" >
+        <property name="redisTemplate" ref="redisTemplate" />
+    </bean >
+
+    &lt;!&ndash; aop配置切点跟通知 &ndash;&gt;
+    <bean id="methodCachePointCut" class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
+        <property name="advice" ref="methodCacheInterceptor"/>
+        <property name="pattern" value=".*ServiceImpl.*getTimestamp"/>
+    </bean>
+    <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"/>-->
+</beans>

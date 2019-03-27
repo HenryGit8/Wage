@@ -1,0 +1,148 @@
+/***
+Lock Page
+***/
+body {
+	background-color: #ddd;
+	padding: 0;
+	margin: 0;
+}
+
+
+.page-lock {
+   top: 45%;
+   left: 40%;
+   position: absolute;
+   margin-top: -140px;
+   margin-left: -260px;
+}
+
+.page-lock .page-logo {
+	margin-bottom: 15px;
+}
+
+.page-lock .page-body {	
+   width: 800px;
+   padding: 10px;
+
+}
+
+.page-lock .page-body:after,
+.page-lock .page-body:before {
+	display: table;
+	content: "";
+	line-height: 0;
+}
+
+.page-lock .page-body:after {
+	clear: both;
+}
+
+.page-lock .page-footer {
+   margin-top: 10px;
+   text-align: left !important;
+   font-size: 12px;
+   color: #eaeaea;
+}
+
+.page-lock img.page-lock-img {
+	float: left;
+	width: 200px;
+	height: auto;
+}
+
+.page-lock .page-lock-info {
+	text-align:center;
+	background-color: rgba(255,255,255,0.5);
+	padding-top: 25px;
+}
+
+.page-lock .page-lock-info h1 {
+	margin-top: 10px;
+	font-weight: 300;
+	color: #fff;
+	font-size: 35px;
+	line-height: 32px;
+	margin-bottom: 5px;
+}
+
+.page-lock .page-lock-info .lock-font {
+	color: #eee;
+	display: block;
+	font-size: 14px;
+	line-height: 14px;
+	margin-bottom: 10px;
+	margin-top: 5px;
+} 
+
+.page-lock .page-lock-info .locked {
+	color: #333;
+	font-size: 14px;	
+	line-height: 14px;
+	font-style: normal;
+}
+
+.page-lock .page-lock-info form {
+	margin: 8px 0;
+}
+
+.page-lock .page-lock-info input {
+	background: #fff;
+}
+
+.page-lock .relogin {
+	margin-top: 10px;
+}
+
+.page-lock .relogin a {
+	color: #e1e1e1;
+}
+
+.page-lock-info .input-medium {
+    width: 79%;
+    margin:auto;
+}
+
+#lockScreen { background: url("../../img/login/bg2.jpg") no-repeat fixed;}
+
+.input-medium {
+	width: 200px !important;
+}
+
+.btn.blue {
+	color: #fff!important;
+	background-color: #2c55ef!important;
+
+}
+
+/*Responsive*/
+@media (max-width: 768px) {
+	.page-lock {
+	   top:0px;
+	   width: 280px;
+	   margin-top: 20px;
+	   margin-left: -140px;
+	}	
+
+	.page-lock .page-body {	
+		padding: 10px;
+	    text-align: center;	
+		width: 280px;
+	}
+
+	.page-lock img.page-lock-img {
+		float: none !important;
+		display: block;
+		margin: 0 auto;
+		text-align: center;
+		margin-bottom: 15px;
+	}
+	.page-lock .page-lock-info {
+		float: none !important;
+		width: 260px;		
+		margin: 0 auto;
+	}
+
+	.page-lock .page-lock-info input {
+		width: 200px !important;
+	}
+}

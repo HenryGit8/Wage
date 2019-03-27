@@ -1,0 +1,29 @@
+
+input[placeholder]{
+    height: 30px;
+}
+#searchBtn,#addBtn,#clearBtn,#SearchAllBtn{
+    margin-top: 23px;
+    width: 100%;
+    height: 30px;
+    padding-bottom: 0px;
+    padding-top: 0px;
+}
+
+#empSex,#empEdu,#departId,#departRand{
+    height: 30px;
+    font-size: 13px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+#myModal,#myModal2
+{
+    top:25px;
+}
+
+
+#empSex1,#empEdu1,#empSex2,#empEdu2,#departId2,#departId1,#departRand2,#departRand1{
+    font-size: 13px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+}

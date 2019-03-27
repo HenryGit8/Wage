@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+             xmlns:beans="http://www.springframework.org/schema/beans"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:context="http://www.springframework.org/schema/context"
+             xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+             xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/security
+		http://www.springframework.org/schema/security/spring-security.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+    <context:property-placeholder
+            ignore-resource-not-found="true" location="classpath*:application.properties" />
+    <dubbo:annotation package="com.wage.web.handler" defaultregistry="web_registry" />
+    <dubbo:annotation package="com.wage.web.common" defaultregistry="web_registry" />
+    <!-- 消费方应用名，用于计算依赖关系，不是匹配条件，不要与提供方一样 -->
+    <dubbo:application name="wage-consumer" owner="programmer" organization="dubbox" />
+    <dubbo:registry address="${dubbo.webzookeeper}" check="false" file="false" id="web_registry"/>
+    <http pattern="/" security="none" />
+    <http auto-config="true"  use-expressions="false" entry-point-ref="myAuthenticationEntryPoint" >
+        <headers>
+            <frame-options policy="SAMEORIGIN"/>
+        </headers>
+        <form-login
+                    login-page="/"
+                    login-processing-url="/login/getLoginMan"
+                    username-parameter="empId"
+                    password-parameter="password"
+                    authentication-failure-handler-ref="myAuthenticationFailureHandler"
+                    authentication-success-handler-ref="myAuthenticationSuccessHandler" />
+        <!-- 认证成功用自定义类myAuthenticationSuccessHandler处理 -->
+
+        <logout logout-url="/login/doLogout"
+                logout-success-url="/"
+                invalidate-session="true"
+                delete-cookies="JSESSIONID"/>
+
+        <!-- 登录成功后拒绝访问跳转的页面 -->
+        <access-denied-handler error-page="/" />
+        <!--<intercept-url pattern="/" access="IS_AUTHENTICATED_ANONYMOUSLY"/>-->
+        <!--<intercept-url pattern="/**" access="ROLE_USER"/>-->
+        <csrf disabled="true" />
+        <!--<intercept-url pattern="/order/**" access="hasRole('ADMIN')"/>
+        <intercept-url pattern="/manager" access="hasRole('EMP')"/>-->
+        <session-management invalid-session-url="/" session-fixation-protection="migrateSession"><!--session过期跳转url--><!--默认migrateSession可选值：newSession、none在用户登录后将新建一个session，同时将原session中的attribute都copy到新的session中-->
+            <concurrency-control max-sessions="1"
+                                 error-if-maximum-exceeded="true" /><!--同一用户最大登录数为1--><!--第二次登录将被阻止,直接转至myAuthenticationFailureHandler-->
+        </session-management>
+        <!--启用自定义过滤器-->
+        <custom-filter ref="myFilter" before="FILTER_SECURITY_INTERCEPTOR" />
+    </http>
+    <!--一个自定义的filter，必须包含 authenticationManager,accessDecisionManager,securityMetadataSource三个属性，
+            我们的所有控制将在这三个类中实现，解释详见具体配置 -->
+    <beans:bean id="myFilter"
+            class="com.wage.web.common.SecurityInterceptor">
+        <beans:property name="authenticationManager" ref="authenticationManager"/>
+        <beans:property name="accessDecisionManager" ref="mesecurityAccessDecisionManager"/>
+        <beans:property name="securityMetadataSource" ref="secureResourceFilterInvocationDefinitionSource" />
+    </beans:bean>
+
+    <!--获取访问url对应的所有权限-->
+    <beans:bean id="secureResourceFilterInvocationDefinitionSource" class="com.wage.web.common.SecureResourceFilterInvocationDefinitionSource" />
+    <!--校验用户的权限是否足够-->
+    <beans:bean id="mesecurityAccessDecisionManager" class="com.wage.web.common.SecurityAccessDecisionManager" />
+
+    <!-- 使用自定义类myUserDetailsService从数据库获取用户信息 -->
+    <authentication-manager  alias="authenticationManager">
+        <authentication-provider user-service-ref="myUserDetailService">
+            <!-- 加密 -->
+            <password-encoder hash="md5" />
+        </authentication-provider>
+    </authentication-manager>
+
+    <!--在这个类中，你就可以从数据库中读入用户的密码，角色信息，是否锁定，账号是否过期等 -->
+    <beans:bean id="myUserDetailService" class="com.wage.web.common.MyUserDetailsService" />
+
+
+    <!-- 授权成功后控制 -->
+    <beans:bean id="myAuthenticationSuccessHandler"
+                class="com.wage.web.common.MyAuthenticationSuccessHandler">
+        <beans:property name="authDispatcherMap" ref="dispatcherMap"></beans:property>
+    </beans:bean>
+
+    <!-- 根据不同的权限，跳转到不同的页面（直接点击登录页面用） -->
+    <beans:bean id="dispatcherMap" class="java.util.HashMap">
+        <beans:constructor-arg>
+            <beans:map>
+                <beans:entry key="ROLE_MANAGER" value="/login/rediectLogin"/>
+                <beans:entry key="ROLE_USER" value="/login/rediectLogin"/>
+            </beans:map>
+        </beans:constructor-arg>
+    </beans:bean>
+
+    <!-- 授权成功后控制 end-->
+
+    <!-- 登录失败后控制 -->
+    <beans:bean id="myAuthenticationFailureHandler"
+                class="com.wage.web.common.MyAuthenticationFailureHandler">
+        <beans:property name="loginEntry" ref="myAuthenticationEntryPoint"></beans:property>
+    </beans:bean>
+
+    <beans:bean id="myAuthenticationEntryPoint"
+                class="com.wage.web.common.MyAuthenticationEntryPoint">
+        <beans:property name="authEntryPointMap" ref="loginFormsMap"></beans:property>
+        <beans:constructor-arg name="loginFormUrl" value="/login/getLoginMan"></beans:constructor-arg>
+    </beans:bean>
+
+    <!-- 根据不同请求所需权限跳转到不同的登录界面 -->
+    <beans:bean id="loginFormsMap" class="java.util.HashMap">
+        <beans:constructor-arg>
+            <beans:map>
+                <beans:entry key="/**" value="/login/rediectLogin" />
+            </beans:map>
+        </beans:constructor-arg>
+    </beans:bean>
+    <!-- 登录失败后控制 end -->
+</beans:beans>

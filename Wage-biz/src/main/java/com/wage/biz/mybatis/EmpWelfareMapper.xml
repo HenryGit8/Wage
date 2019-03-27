@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wage.biz.mybatis.EmpWelfareMapper" >
+  <!--<cache eviction="LRU" type="com.wage.redis.RedisCache" />-->
+  <cache type="org.mybatis.caches.ignite.IgniteCacheAdapter" />
+  <resultMap id="BaseResultMap" type="com.wage.model.EmpWelfare" >
+    <id column="ID" property="id" jdbcType="DECIMAL" />
+    <result column="EMP_ID" property="empId" jdbcType="DECIMAL" />
+    <result column="TYPE" property="type" jdbcType="DECIMAL" />
+    <result column="MONEY" property="money" jdbcType="DECIMAL" />
+    <result column="EFFECTIVE_DATE" property="effectiveDate" jdbcType="TIMESTAMP" />
+    <result column="REASON" property="reason" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap id="BaseResultMapExt" type="com.wage.model.ext.EmpWelfareExt" extends="BaseResultMap">
+    <result column="EMP_NAME" property="empName" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, EMP_ID, TYPE, MONEY, EFFECTIVE_DATE, REASON
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from EMP_WELFARE
+    where ID = #{id,jdbcType=DECIMAL}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from EMP_WELFARE
+    where ID = #{id,jdbcType=DECIMAL}
+  </delete>
+  <insert id="insert" parameterType="com.wage.model.EmpWelfare" >
+    insert into EMP_WELFARE (ID, EMP_ID, TYPE, 
+      MONEY, EFFECTIVE_DATE, REASON
+      )
+    values (#{id,jdbcType=DECIMAL}, #{empId,jdbcType=DECIMAL}, #{type,jdbcType=DECIMAL}, 
+      #{money,jdbcType=DECIMAL}, #{effectiveDate,jdbcType=TIMESTAMP}, #{reason,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.wage.model.EmpWelfare" >
+    insert into EMP_WELFARE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID,
+      </if>
+      <if test="empId != null" >
+        EMP_ID,
+      </if>
+      <if test="type != null" >
+        TYPE,
+      </if>
+      <if test="money != null" >
+        MONEY,
+      </if>
+      <if test="effectiveDate != null" >
+        EFFECTIVE_DATE,
+      </if>
+      <if test="reason != null" >
+        REASON,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=DECIMAL},
+      </if>
+      <if test="empId != null" >
+        #{empId,jdbcType=DECIMAL},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=DECIMAL},
+      </if>
+      <if test="money != null" >
+        #{money,jdbcType=DECIMAL},
+      </if>
+      <if test="effectiveDate != null" >
+        #{effectiveDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="reason != null" >
+        #{reason,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wage.model.EmpWelfare" >
+    update EMP_WELFARE
+    <set >
+      <if test="empId != null" >
+        EMP_ID = #{empId,jdbcType=DECIMAL},
+      </if>
+      <if test="type != null" >
+        TYPE = #{type,jdbcType=DECIMAL},
+      </if>
+      <if test="money != null" >
+        MONEY = #{money,jdbcType=DECIMAL},
+      </if>
+      <if test="effectiveDate != null" >
+        EFFECTIVE_DATE = #{effectiveDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="reason != null" >
+        REASON = #{reason,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=DECIMAL}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.wage.model.EmpWelfare" >
+    update EMP_WELFARE
+    set EMP_ID = #{empId,jdbcType=DECIMAL},
+      TYPE = #{type,jdbcType=DECIMAL},
+      MONEY = #{money,jdbcType=DECIMAL},
+      EFFECTIVE_DATE = #{effectiveDate,jdbcType=TIMESTAMP},
+      REASON = #{reason,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=DECIMAL}
+  </update>
+  <insert id="insertEmpWelfare" parameterType="com.wage.model.EmpWelfare" >
+    insert into EMP_WELFARE (ID, EMP_ID, TYPE,
+    MONEY, EFFECTIVE_DATE, REASON
+    )
+   SELECT (case when MAX(ID) IS NULL then 1 else MAX(ID)+1 end), #{empId,jdbcType=DECIMAL}, #{type,jdbcType=DECIMAL},
+    #{money,jdbcType=DECIMAL}, SYSDATE, #{reason,jdbcType=VARCHAR}
+    FROM EMP_WELFARE
+  </insert>
+
+  <insert id="insertEmpWelfareList" parameterType="java.util.List">
+    INSERT INTO  EMP_WELFARE (ID, EMP_ID, TYPE,
+    MONEY, EFFECTIVE_DATE, REASON
+    )
+    SELECT A.*
+    FROM(
+    <foreach collection="list" item="item" index="index" separator="UNION ALL">
+      SELECT (case when MAX(ID) IS NULL then 1 else MAX(ID)+1+#{index} end), #{item.empId,jdbcType=DECIMAL}, #{item.type,jdbcType=DECIMAL},
+      #{item.money,jdbcType=DECIMAL}, #{item.effectiveDate,jdbcType=TIMESTAMP}, #{item.reason,jdbcType=VARCHAR}
+      FROM EMP_WELFARE
+    </foreach>
+    )A
+  </insert>
+  <select id="findBySearch" resultMap="BaseResultMapExt" >
+    SELECT A.*,B.EMP_NAME
+    FROM  EMP_WELFARE A LEFT JOIN EMP_DIC_BASIC_INFO B ON A.EMP_ID = B.EMP_ID
+    WHERE 1=1
+    <if test="empId != null and empId != ''" >
+      AND A.EMP_ID = #{empId,jdbcType=DECIMAL}
+    </if>
+    <if test="type != null and type != ''" >
+      AND A.TYPE = #{type,jdbcType=DECIMAL}
+    </if>
+    <if test="moneyMin != null and moneyMax != null" >
+      AND (A.MONEY BETWEEN #{moneyMin,jdbcType=DECIMAL} AND #{moneyMax,jdbcType=DECIMAL}
+      OR A.MONEY BETWEEN #{moneyMax,jdbcType=DECIMAL} AND #{moneyMin,jdbcType=DECIMAL})
+    </if>
+    <if test="effectiveDateMin != null and effectiveDateMax != null" >
+      AND (A.EFFECTIVE_DATE BETWEEN #{effectiveDateMin,jdbcType=TIMESTAMP} AND #{effectiveDateMax,jdbcType=TIMESTAMP}
+      OR A.EFFECTIVE_DATE BETWEEN #{effectiveDateMax,jdbcType=TIMESTAMP} AND #{effectiveDateMin,jdbcType=TIMESTAMP})
+    </if>
+    <if test="sort == null or order == null or sort == '' or order == ''">
+      ORDER BY A.ID DESC,A.EFFECTIVE_DATE DESC
+    </if>
+    <if test="sort != null and order != null and sort != '' and order != ''">
+      <if test="order == 'asc'">
+        <if test="sort == 'type'" >
+          ORDER BY A.TYPE ASC,A.ID ASC
+        </if>
+        <if test="sort == 'money'" >
+          ORDER BY A.MONEY ASC,A.ID ASC
+        </if>
+        <if test="sort == 'effectiveDate'" >
+          ORDER BY A.EFFECTIVE_DATE ASC,A.ID ASC
+        </if>
+      </if>
+      <if test="order == 'desc'">
+        <if test="sort == 'type'" >
+          ORDER BY A.TYPE DESC,A.ID DESC
+        </if>
+        <if test="sort == 'money'" >
+          ORDER BY A.MONEY DESC,A.ID DESC
+        </if>
+        <if test="sort == 'effectiveDate'" >
+          ORDER BY A.EFFECTIVE_DATE DESC,A.ID DESC
+        </if>
+      </if>
+    </if>
+  </select>
+  <select id="findThisMonthData" resultType="java.lang.String" parameterType="java.lang.Integer" >
+    UPDATE EMP_WELFARE
+    SET
+    select sum(MONEY)
+    from EMP_WELFARE
+    where to_char(sysdate,'yyyy-mm')=to_char(EFFECTIVE_DATE,'yyyy-mm')
+        and EMP_ID = #{empId,jdbcType=DECIMAL}
+  </select>
+  <delete id="deleteByEmpId">
+    delete from EMP_WELFARE
+    where EMP_ID = #{empId,jdbcType=DECIMAL}
+  </delete>
+</mapper>

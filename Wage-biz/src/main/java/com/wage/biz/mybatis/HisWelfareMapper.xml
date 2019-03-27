@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wage.biz.mybatis.HisWelfareMapper" >
+  <!--<cache eviction="LRU" type="com.wage.redis.RedisCache" />-->
+  <cache type="org.mybatis.caches.ignite.IgniteCacheAdapter" />
+  <resultMap id="BaseResultMap" type="com.wage.model.HisWelfare" >
+    <id column="SERIAL_ID" property="serialId" jdbcType="DECIMAL" />
+    <result column="APPLY_TIME" property="applyTime" jdbcType="TIMESTAMP" />
+    <result column="EMP_ID" property="empId" jdbcType="DECIMAL" />
+    <result column="APPLY_REASON" property="applyReason" jdbcType="VARCHAR" />
+    <result column="WELFARE_TOTAL" property="welfareTotal" jdbcType="DECIMAL" />
+    <result column="IS_ALLOW" property="isAllow" jdbcType="DECIMAL" />
+    <result column="WELFARE_TYPE" property="welfareType" jdbcType="DECIMAL" />
+    <result column="APPROVER_EMPID" property="approverEmpid" jdbcType="DECIMAL" />
+    <result column="APPROVER_TIME" property="approverTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <resultMap id="BaseResultMapExt" type="com.wage.model.ext.HisWelfareExt" extends="BaseResultMap">
+    <result column="EMP_NAME" property="empName" jdbcType="VARCHAR" />
+    <result column="APPROVER_NAME" property="approverName" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    SERIAL_ID, APPLY_TIME, EMP_ID, APPLY_REASON, WELFARE_TOTAL, IS_ALLOW, WELFARE_TYPE,
+    APPROVER_EMPID, APPROVER_TIME
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from HIS_WELFARE
+    where SERIAL_ID = #{serialId,jdbcType=DECIMAL}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from HIS_WELFARE
+    where SERIAL_ID = #{serialId,jdbcType=DECIMAL}
+  </delete>
+  <insert id="insert" parameterType="com.wage.model.HisWelfare" >
+    insert into HIS_WELFARE (SERIAL_ID, APPLY_TIME, EMP_ID, 
+      APPLY_REASON, WELFARE_TOTAL, IS_ALLOW, 
+      WELFARE_TYPE, APPROVER_EMPID, APPROVER_TIME)
+    values (#{serialId,jdbcType=DECIMAL}, #{applyTime,jdbcType=TIMESTAMP}, #{empId,jdbcType=DECIMAL}, 
+      #{applyReason,jdbcType=VARCHAR}, #{welfareTotal,jdbcType=DECIMAL}, #{isAllow,jdbcType=DECIMAL}, 
+      #{welfareType,jdbcType=DECIMAL}, #{approverEmpid,jdbcType=DECIMAL}, #{approverTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.wage.model.HisWelfare" >
+    insert into HIS_WELFARE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="serialId != null" >
+        SERIAL_ID,
+      </if>
+      <if test="applyTime != null" >
+        APPLY_TIME,
+      </if>
+      <if test="empId != null" >
+        EMP_ID,
+      </if>
+      <if test="applyReason != null" >
+        APPLY_REASON,
+      </if>
+      <if test="welfareTotal != null" >
+        WELFARE_TOTAL,
+      </if>
+      <if test="isAllow != null" >
+        IS_ALLOW,
+      </if>
+      <if test="welfareType != null" >
+        WELFARE_TYPE,
+      </if>
+      <if test="approverEmpid != null" >
+        APPROVER_EMPID,
+      </if>
+      <if test="approverTime != null" >
+        APPROVER_TIME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="serialId != null" >
+        #{serialId,jdbcType=DECIMAL},
+      </if>
+      <if test="applyTime != null" >
+        #{applyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="empId != null" >
+        #{empId,jdbcType=DECIMAL},
+      </if>
+      <if test="applyReason != null" >
+        #{applyReason,jdbcType=VARCHAR},
+      </if>
+      <if test="welfareTotal != null" >
+        #{welfareTotal,jdbcType=DECIMAL},
+      </if>
+      <if test="isAllow != null" >
+        #{isAllow,jdbcType=DECIMAL},
+      </if>
+      <if test="welfareType != null" >
+        #{welfareType,jdbcType=DECIMAL},
+      </if>
+      <if test="approverEmpid != null" >
+        #{approverEmpid,jdbcType=DECIMAL},
+      </if>
+      <if test="approverTime != null" >
+        #{approverTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wage.model.HisWelfare" >
+    update HIS_WELFARE
+    <set >
+      <if test="applyTime != null" >
+        APPLY_TIME = #{applyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="empId != null" >
+        EMP_ID = #{empId,jdbcType=DECIMAL},
+      </if>
+      <if test="applyReason != null" >
+        APPLY_REASON = #{applyReason,jdbcType=VARCHAR},
+      </if>
+      <if test="welfareTotal != null" >
+        WELFARE_TOTAL = #{welfareTotal,jdbcType=DECIMAL},
+      </if>
+      <if test="isAllow != null" >
+        IS_ALLOW = #{isAllow,jdbcType=DECIMAL},
+      </if>
+      <if test="welfareType != null" >
+        WELFARE_TYPE = #{welfareType,jdbcType=DECIMAL},
+      </if>
+      <if test="approverEmpid != null" >
+        APPROVER_EMPID = #{approverEmpid,jdbcType=DECIMAL},
+      </if>
+        APPROVER_TIME = SYSDATE
+    </set>
+    where SERIAL_ID = #{serialId,jdbcType=DECIMAL}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.wage.model.HisWelfare" >
+    update HIS_WELFARE
+    set APPLY_TIME = #{applyTime,jdbcType=TIMESTAMP},
+      EMP_ID = #{empId,jdbcType=DECIMAL},
+      APPLY_REASON = #{applyReason,jdbcType=VARCHAR},
+      WELFARE_TOTAL = #{welfareTotal,jdbcType=DECIMAL},
+      IS_ALLOW = #{isAllow,jdbcType=DECIMAL},
+      WELFARE_TYPE = #{welfareType,jdbcType=DECIMAL},
+      APPROVER_EMPID = #{approverEmpid,jdbcType=DECIMAL},
+      APPROVER_TIME = SYSDATE
+    where SERIAL_ID = #{serialId,jdbcType=DECIMAL}
+  </update>
+  <select id="findBySearch" resultMap="BaseResultMapExt">
+    SELECT A.*,B.EMP_NAME,C.EMP_NAME AS APPROVER_NAME
+    FROM HIS_WELFARE A LEFT JOIN EMP_DIC_BASIC_INFO B ON A.EMP_ID = B.EMP_ID
+    LEFT JOIN EMP_DIC_BASIC_INFO C ON A.APPROVER_EMPID = C.EMP_ID
+    WHERE 1=1
+    <if test="empId != null" >
+      AND A.EMP_ID = #{empId,jdbcType=DECIMAL}
+    </if>
+    <if test="applyTimeMin != null and applyTimeMax != null" >
+      AND (A.APPLY_TIME BETWEEN #{applyTimeMin,jdbcType=TIMESTAMP} AND #{applyTimeMax,jdbcType=TIMESTAMP}
+      OR A.APPLY_TIME BETWEEN #{applyTimeMax,jdbcType=TIMESTAMP} AND #{applyTimeMin,jdbcType=TIMESTAMP})
+    </if>
+    <if test="isAllow == 3" >
+      AND IS_ALLOW != 0
+    </if>
+    <if test="isAllow == 0" >
+      AND IS_ALLOW = 0
+    </if>
+    <if test="isAllow == 1 or isAllow == 2" >
+      AND A.IS_ALLOW = #{isAllow,jdbcType=DECIMAL}
+    </if>
+    <if test="welfareType != null" >
+      AND A.WELFARE_TYPE = #{welfareType,jdbcType=DECIMAL}
+    </if>
+    <if test="welfareTotalMin != null and welfareTotalMax != null" >
+      AND (A.WELFARE_TOTAL BETWEEN #{welfareTotalMin,jdbcType=DECIMAL} AND #{welfareTotalMax,jdbcType=DECIMAL}
+      OR A.WELFARE_TOTAL BETWEEN #{welfareTotalMax,jdbcType=DECIMAL} AND #{welfareTotalMin,jdbcType=DECIMAL})
+    </if>
+    <if test="sort == null or order == null or sort == '' or order == ''">
+      ORDER BY A.APPROVER_TIME DESC,A.APPLY_TIME DESC
+    </if>
+    <if test="sort != null and order != null and sort != '' and order != ''">
+      <if test="order == 'asc'">
+        <if test="sort == 'applyTime'" >
+          ORDER BY A.APPLY_TIME ASC,A.SERIAL_ID ASC
+        </if>
+        <if test="sort == 'welfareType'" >
+          ORDER BY A.WELFARE_TYPE ASC,A.SERIAL_ID ASC
+        </if>
+        <if test="sort == 'welfareTotal'" >
+          ORDER BY A.WELFARE_TOTAL ASC,A.SERIAL_ID ASC
+        </if>
+      </if>
+
+      <if test="order == 'desc'">
+        <if test="sort == 'applyTime'" >
+          ORDER BY A.APPLY_TIME DESC,A.SERIAL_ID DESC
+        </if>
+        <if test="sort == 'welfareType'" >
+          ORDER BY A.WELFARE_TYPE DESC,A.SERIAL_ID DESC
+        </if>
+        <if test="sort == 'welfareTotal'" >
+          ORDER BY A.WELFARE_TOTAL DESC,A.SERIAL_ID DESC
+        </if>
+      </if>
+    </if>
+  </select>
+  <insert id="insertWelfare" parameterType="com.wage.model.HisWelfare" >
+    insert into HIS_WELFARE (SERIAL_ID, APPLY_TIME, EMP_ID,
+    APPLY_REASON, WELFARE_TOTAL, IS_ALLOW,
+    WELFARE_TYPE)
+    SELECT (case when MAX(SERIAL_ID) IS NULL then 1 else MAX(SERIAL_ID)+1 end), SYSDATE, #{empId,jdbcType=DECIMAL},
+    #{applyReason,jdbcType=VARCHAR}, #{welfareTotal,jdbcType=DECIMAL}, 0,
+    #{welfareType,jdbcType=DECIMAL}
+    FROM HIS_WELFARE
+  </insert>
+  <insert id="insertWelfareList" parameterType="java.util.List">
+    INSERT INTO HIS_WELFARE
+    (SERIAL_ID, APPLY_TIME, EMP_ID,
+    APPLY_REASON, WELFARE_TOTAL, IS_ALLOW,
+    WELFARE_TYPE)
+    SELECT A.*
+    FROM(
+    <foreach collection="list" item="item" index="index" separator="UNION ALL">
+      SELECT (case when MAX(SERIAL_ID) IS NULL then 1 else MAX(SERIAL_ID)+1 end), SYSDATE, #{item.empId,jdbcType=DECIMAL},
+      #{item.applyReason,jdbcType=VARCHAR}, #{item.welfareTotal,jdbcType=DECIMAL}, #{item.isAllow,jdbcType=DECIMAL}, #{item.welfareType,jdbcType=DECIMAL}
+      FROM HIS_WELFARE
+    </foreach>
+    )A
+  </insert>
+  <delete id="deleteByEmpId">
+    delete from HIS_WELFARE
+    where EMP_ID = #{empId,jdbcType=DECIMAL}
+    and IS_ALLOW = 0
+  </delete>
+</mapper>

@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wage.biz.mybatis.ViewAddressMapper" >
+  <!--<cache eviction="LRU" type="com.wage.redis.RedisCache" />-->
+  <cache type="org.mybatis.caches.ignite.IgniteCacheAdapter" />
+  <resultMap id="BaseResultMap" type="com.wage.model.ViewAddress" >
+    <id column="ID" property="id" jdbcType="DECIMAL" />
+    <result column="ADDRESS" property="address" jdbcType="VARCHAR" />
+    <result column="NAME" property="name" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, ADDRESS, NAME
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Short" >
+    select 
+    <include refid="Base_Column_List" />
+    from VIEW_ADDRESS
+    where ID = #{id,jdbcType=DECIMAL}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Short" >
+    delete from VIEW_ADDRESS
+    where ID = #{id,jdbcType=DECIMAL}
+  </delete>
+  <insert id="insert" parameterType="com.wage.model.ViewAddress" >
+    insert into VIEW_ADDRESS (ID, ADDRESS, NAME
+      )
+    values (#{id,jdbcType=DECIMAL}, #{address,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.wage.model.ViewAddress" >
+    insert into VIEW_ADDRESS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID,
+      </if>
+      <if test="address != null" >
+        ADDRESS,
+      </if>
+      <if test="name != null" >
+        NAME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=DECIMAL},
+      </if>
+      <if test="address != null" >
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wage.model.ViewAddress" >
+    update VIEW_ADDRESS
+    <set >
+      <if test="address != null" >
+        ADDRESS = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        NAME = #{name,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=DECIMAL}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.wage.model.ViewAddress" >
+    update VIEW_ADDRESS
+    set ADDRESS = #{address,jdbcType=VARCHAR},
+      NAME = #{name,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=DECIMAL}
+  </update>
+  <select id="findAuthByEmpId" resultMap="BaseResultMap" >
+    SELECT DISTINCT B.*
+    FROM
+    (
+      SELECT REGEXP_SUBSTR (AUTH,
+      '[^,]+',
+      1,
+      LEVEL,
+      'i')
+      AS ID
+      FROM SYS_AUTH
+      WHERE EMP_ID = #{empId,jdbcType=DECIMAL}
+      CONNECT BY LEVEL &lt;=
+      LENGTH (AUTH)
+      - LENGTH (REGEXP_REPLACE (AUTH, ',', ''))
+      + 1
+    ) A
+    LEFT JOIN
+    VIEW_ADDRESS B
+    ON A.ID = B.ID
+    ORDER BY B.ID
+  </select>
+  <select  id="findNoMatch" resultMap="BaseResultMap">
+    SELECT *
+    FROM VIEW_ADDRESS
+    WHERE ID NOT IN
+    (    SELECT DISTINCT REGEXP_SUBSTR ((case when AUTH IS NULL then '0' else AUTH end),
+    '[^,]+',
+    1,
+    LEVEL,
+    'i')
+    AS ID
+    FROM SYS_AUTH
+    WHERE 1=1
+    <if test="empId != null" >
+      AND EMP_ID = #{empId,jdbcType=DECIMAL}
+    </if>
+    CONNECT BY LEVEL &lt;=
+    LENGTH (AUTH)
+    - LENGTH (REGEXP_REPLACE (AUTH, ',', ''))
+    + 1)
+    ORDER BY ID
+  </select>
+  <select  id="findMatch" resultMap="BaseResultMap">
+    SELECT *
+    FROM VIEW_ADDRESS
+    WHERE ID IN
+    (    SELECT DISTINCT REGEXP_SUBSTR (AUTH,
+    '[^,]+',
+    1,
+    LEVEL,
+    'i')
+    AS ID
+    FROM SYS_AUTH
+    WHERE 1=1
+    <if test="empId != null" >
+      AND EMP_ID = #{empId,jdbcType=DECIMAL}
+    </if>
+    <if test="empId == null" >
+      AND 1=0
+    </if>
+    CONNECT BY LEVEL &lt;=
+    LENGTH (AUTH)
+    - LENGTH (REGEXP_REPLACE (AUTH, ',', ''))
+    + 1)
+    ORDER BY ID
+  </select>
+</mapper>

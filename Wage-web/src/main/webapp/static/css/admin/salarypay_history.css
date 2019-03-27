@@ -1,0 +1,62 @@
+#chart1{
+    float: left;
+}
+#chart2{
+    float: right;
+}
+#chart3{
+    float: left;
+}
+.card .category, .card label {
+    color: #333;
+}
+#p div{
+    margin: 5px;
+    float: left;
+}
+#p div input{
+    width: 97px;
+}
+#p div a{
+    width: 76px;
+    margin-top: 0.5px;
+}
+#btn,#btn1,#btn2,#btn3,#btn4,#btn5,#btn6,#btn7{
+    margin-right: 5px;
+}
+#file label{
+    margin-bottom: -5px;
+}
+#bb a{
+    width: 76px;
+}
+
+#wageTable,#totalTable{
+    width: 100%;
+    border:1px solid #000;
+    font-family:'宋体'; font-size:14px;
+}
+#wageTable td,#wageTable th,#totalTable td,#totalTable th{
+    height: 35px;
+    border:1px solid #000;
+    text-align:center;
+}
+
+#wageModal
+{
+    top:140px;
+}
+#updateIsGrantModal
+{
+    top:60px;
+}
+
+#chartModal
+{
+    top:30px;
+}
+
+#totalModal
+{
+    top:70px;
+}

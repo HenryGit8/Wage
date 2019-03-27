@@ -1,0 +1,13 @@
+.layui-table-view {
+    margin: 0px 0;
+}
+#wageTable{
+    width: 100%;
+    border:1px solid #000;
+    font-family:'宋体'; font-size:14px;
+}
+#wageTable td,#wageTable th{
+    height: 35px;
+    border:1px solid #000;
+    text-align:center;
+}

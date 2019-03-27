@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+       xmlns:jee="http://www.springframework.org/schema/jee"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xmlns:mongo="http://www.springframework.org/schema/data/mongo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+           http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd  
+           http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd  
+           http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.2.xsd
+		   http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-3.2.xsd
+           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+           http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd
+			http://www.springframework.org/schema/data/mongo
+			http://www.springframework.org/schema/data/mongo/spring-mongo-1.0.xsd"
+       default-autowire="byName" default-lazy-init="false">
+
+    <context:property-placeholder
+            ignore-resource-not-found="true" location="classpath*:application.properties"/>
+
+
+    <!-- redis数据源 -->
+    <!--	<bean id="poolConfig" class="redis.clients.jedis.JedisPoolConfig">
+            <property name="maxIdle" value="${redis.maxIdle}" />
+            <property name="maxTotal" value="${redis.maxActive}" />
+            <property name="maxWaitMillis" value="${redis.maxWait}" />
+            <property name="testOnBorrow" value="${redis.testOnBorrow}" />
+        </bean>
+
+        &lt;!&ndash; spring-data-数据工厂 &ndash;&gt;
+        <bean id="jedisConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
+            <property name="password" value="${redis.pass}" />
+            <property name="usePool" value="true" />
+            <property name="hostName" value="${redis.host}" />
+            <property name="port" value="${redis.port}" />
+            <property name="poolConfig" ref="poolConfig" />
+            <property name="timeout" value="${redis.timeout}" ></property>
+        </bean>
+
+
+        &lt;!&ndash; 使用中间类解决RedisCache.jedisConnectionFactory的静态注入，从而使MyBatis实现第三方缓存 &ndash;&gt;
+        <bean id="redisCacheTransfer" class="com.wage.redis.RedisCacheTransfer">
+            <property name="jedisConnectionFactory" ref="jedisConnectionFactory" />
+        </bean>-->
+
+    <bean id="cacheManager" class="org.apache.ignite.cache.spring.SpringCacheManager">
+        <property name="configuration">
+            <bean class="org.apache.ignite.configuration.IgniteConfiguration">
+                <!-- 客户端模式设置，为true时开启客户端模式 -->
+                <!--<property name="clientMode" value="false"/>-->
+                <property name="peerClassLoadingEnabled" value="true"/>
+                <property name="cacheConfiguration">
+                    <bean class="org.apache.ignite.configuration.CacheConfiguration">
+                        <property name="name" value="myBatisCache"/>
+                        <property name="cacheMode" value="PARTITIONED"/>
+                        <property name="backups" value="1"/>
+                    </bean>
+                </property>
+                <property name="discoverySpi">
+                    <bean class="org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi">
+                        <property name="localPort" value="47500"/>
+                        <property name="localPortRange" value="20"/>
+                        <property name="ipFinder">
+                            <!--<bean class="org.apache.ignite.spi.discovery.tcp.ipfinder.zk.TcpDiscoveryZookeeperIpFinder">
+                                <property name="zkConnectionString" value="${zookeeper}"/>
+                            </bean>-->
+                            <bean class="org.apache.ignite.spi.discovery.tcp.ipfinder.multicast.TcpDiscoveryMulticastIpFinder">
+                                <property name="multicastGroup" value="228.10.10.157"/>
+                            </bean>
+                        </property>
+                    </bean>
+                </property>
+                <property name="communicationSpi">
+                    <bean class="org.apache.ignite.spi.communication.tcp.TcpCommunicationSpi">
+                        <property name="localPort" value="47100"/>
+                    </bean>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
+    <!--<bean id="templateCacheCfg" class="org.apache.ignite.configuration.CacheConfiguration">
+        &lt;!&ndash; Set a cache name. &ndash;&gt;
+        <property name="name" value="myBatisCache"/>
+
+        &lt;!&ndash; Set cache mode to LOCAL by default. &ndash;&gt;
+        <property name="cacheMode" value="PARTITIONED"/>
+    </bean>-->
+
+
+    <!-- 数据源配置-->
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+        <property name="driverClassName" value="${jdbc.driver}"/>
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+        <property name="maxIdle" value="5"/>
+        <property name="maxActive" value="5"/>
+        <property name="defaultAutoCommit" value="false"/>
+        <property name="timeBetweenEvictionRunsMillis" value="60000"/>
+        <property name="minEvictableIdleTimeMillis" value="300000"/>
+        <property name="validationQuery" value="select * from dual"/>
+    </bean>
+
+    <!-- MyBatis配置 -->
+    <bean id="sessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <!-- 自动扫描entity目录, 省掉Configuration.xml里的手工配置 -->
+        <property name="typeAliasesPackage" value=""/>
+        <property name="configLocation" value="mybatis.xml"/>
+        <!-- 配置Mybatis的插件plugin -->
+        <property name="plugins">
+            <array>
+                <bean class="com.github.pagehelper.PageInterceptor">
+                    <!-- helperDialect：分页插件会自动检测当前的数据库链接，自动选择合适的分页方式。也可以指定 -->
+                    <!-- reasonable:默认false。为 true 时，pageNum<=0 时会查询第一页， pageNum>pages（超过总数时），会查询最后一页。 -->
+                    <property name="properties">
+                        <value>
+                            helperDialect=oracle
+                            reasonable=true
+                        </value>
+                    </property>
+                </bean>
+            </array>
+        </property>
+    </bean>
+    <!-- Mapper动态代理开发   扫描 -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <!-- 基本包 -->
+        <property name="basePackage" value="com.wage.biz.mybatis"/>
+    </bean>
+
+    <!-- transaction support -->
+    <!-- PlatformTransactionMnager -->
+    <bean id="transactionManager"
+          class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <!-- 使用annotation定义事务 -->
+    <tx:annotation-driven transaction-manager="transactionManager"
+                          proxy-target-class="true"/>
+
+    <aop:aspectj-autoproxy expose-proxy="true"/>
+
+    <mongo:mongo id="mongo" host="${mongodb.host}" port="${mongodb.port}">
+        <!--<mongo:mongo id="mongo" host="127.0.0.1" port="27017" >-->
+        <mongo:options connections-per-host="8"
+                       threads-allowed-to-block-for-connection-multiplier="4"
+                       connect-timeout="1500"
+                       max-wait-time="1500"
+                       auto-connect-retry="true"
+                       socket-keep-alive="true"
+                       socket-timeout="1500"
+                       write-number="1"
+                       write-timeout="0" write-fsync="true"/>
+    </mongo:mongo>
+    <!-- 设置使用的数据库 名-->
+    <mongo:db-factory dbname="${mongodb.dbname}" username="${mongodb.username}" password="${mongodb.password}"
+                      mongo-ref="mongo"/>
+    <!-- mongodb的模板 -->
+    <bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
+        <constructor-arg name="mongoDbFactory" ref="mongoDbFactory"/>
+    </bean>
+
+    <dubbo:application name="wage-service" owner="programmer" organization="wage"/>
+
+    <dubbo:registry address="${dubbo.webzookeeper}" timeout="60000"/>
+
+    <dubbo:provider timeout="60000"/>
+
+
+    <!-- 采用注释的方式配置bean -->
+    <context:annotation-config/>
+    <!-- 配置要扫描的包 -->
+    <context:component-scan base-package="com.*.biz"/>
+    <!-- dubbo协议的包 -->
+    <dubbo:annotation package="com.wage.service"/>
+    <!-- 定义dubbo协议（使用kryo序列化） -->
+    <dubbo:protocol name="dubbo" serialization="kryo" port="20880"/>
+
+</beans>

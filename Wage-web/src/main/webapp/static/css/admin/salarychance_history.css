@@ -1,0 +1,18 @@
+#container,#container1{
+    width: 550px;
+    height: 297px;
+    margin:0 auto;
+    margin-top:25px;
+}
+#chart1{
+    float: left;
+}
+#chart2{
+    float: right;
+}
+#chart3{
+    float: left;
+}
+#chart4{
+    float: right;
+}

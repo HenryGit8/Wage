@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wage.biz.mybatis.EmpNoticeMapper" >
+  <!--<cache eviction="LRU" type="com.wage.redis.RedisCache" />-->
+  <!--<cache type="org.mybatis.caches.ignite.IgniteCacheAdapter" />-->
+  <resultMap id="BaseResultMap" type="com.wage.model.EmpNoticeKey" >
+    <id column="EMP_ID" property="empId" jdbcType="DECIMAL" />
+    <id column="NOTICE_ID" property="noticeId" jdbcType="DECIMAL" />
+    <id column="IS_READ" property="isRead" jdbcType="DECIMAL" />
+  </resultMap>
+  <resultMap id="BaseResultMapExt" type="com.wage.model.ext.EmpNoticeKeyExt" extends="BaseResultMap">
+    <result column="EMP_NAME" property="empName" jdbcType="VARCHAR" />
+    <result column="CONTENT" property="content" jdbcType="VARCHAR" />
+    <result column="EMP_HEAD_IMG" property="empHeadImg" jdbcType="VARCHAR" />
+    <result column="DAY" property="day" jdbcType="VARCHAR" />
+    <result column="HOUR" property="hour" jdbcType="VARCHAR" />
+    <result column="MIN" property="min" jdbcType="VARCHAR" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="com.wage.model.EmpNoticeKey" >
+    delete from EMP_NOTICE
+    where EMP_ID = #{empId,jdbcType=DECIMAL}
+      and NOTICE_ID = #{noticeId,jdbcType=DECIMAL}
+      and IS_READ = #{isRead,jdbcType=DECIMAL}
+  </delete>
+  <insert id="insert" parameterType="com.wage.model.EmpNoticeKey" >
+    insert into EMP_NOTICE (EMP_ID, NOTICE_ID, IS_READ
+      )
+    values (#{empId,jdbcType=DECIMAL}, #{noticeId,jdbcType=DECIMAL}, #{isRead,jdbcType=DECIMAL}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.wage.model.EmpNoticeKey" >
+    insert into EMP_NOTICE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="empId != null" >
+        EMP_ID,
+      </if>
+      <if test="noticeId != null" >
+        NOTICE_ID,
+      </if>
+      <if test="isRead != null" >
+        IS_READ,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="empId != null" >
+        #{empId,jdbcType=DECIMAL},
+      </if>
+      <if test="noticeId != null" >
+        #{noticeId,jdbcType=DECIMAL},
+      </if>
+      <if test="isRead != null" >
+        #{isRead,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <delete id="removeNoticeById">
+    delete from EMP_NOTICE
+    where NOTICE_ID = #{noticeId,jdbcType=DECIMAL}
+  </delete>
+  <insert id="saveEmpNoticList" parameterType="java.util.List">
+    insert into EMP_NOTICE (EMP_ID, NOTICE_ID, IS_READ
+    )
+    SELECT A.*
+    FROM(
+    <foreach collection="list" item="item" index="index" separator="UNION ALL">
+      SELECT #{item.empId,jdbcType=DECIMAL}, #{item.noticeId,jdbcType=DECIMAL}, 0
+      FROM DUAL
+    </foreach>
+    )A
+  </insert>
+  <select id="getByNoticeId" resultMap="BaseResultMap">
+    SELECT *
+    FROM EMP_NOTICE
+    WHERE NOTICE_ID = #{noticeId,jdbcType=DECIMAL}
+  </select>
+  <select id="findNoRead" resultType="java.lang.Integer">
+    SELECT COUNT(*)
+    FROM EMP_NOTICE
+    WHERE IS_READ = 0
+    AND EMP_ID = #{empId,jdbcType=DECIMAL}
+  </select>
+  <select id="findNotice" resultMap="BaseResultMapExt">
+    <![CDATA[SELECT A.*,regexp_replace(B.CONTENT,'</?[^>]*>|nbsp;|&','') CONTENT,C.EMP_HEAD_IMG,D.EMP_NAME,floor(to_number(sysdate-B.RELEASE_TIME)) AS DAY,mod(floor(to_number(sysdate-B.RELEASE_TIME)*24),24) AS HOUR,mod(floor(to_number(sysdate-B.RELEASE_TIME)*24*60),60) AS MIN]]>
+          FROM EMP_NOTICE A LEFT JOIN SYS_NOTICE B ON A.NOTICE_ID = B.ID
+          LEFT JOIN EMP_IMG C ON B.EMP_ID = C.EMP_ID
+          LEFT JOIN EMP_DIC_BASIC_INFO D ON B.EMP_ID = D.EMP_ID
+          WHERE A.EMP_ID = #{empId,jdbcType=DECIMAL}
+          AND A.IS_READ = 0
+          ORDER BY A.IS_READ ASC ,B.RELEASE_TIME DESC
+  </select>
+  <select id="findEmpNotice" resultMap="BaseResultMapExt">
+    <![CDATA[ SELECT A.*,regexp_replace(B.CONTENT,'</?[^>]*>|nbsp;|&','') CONTENT,C.EMP_HEAD_IMG,D.EMP_NAME,floor(to_number(sysdate-B.RELEASE_TIME)) AS DAY,mod(floor(to_number(sysdate-B.RELEASE_TIME)*24),24) AS HOUR,mod(floor(to_number(sysdate-B.RELEASE_TIME)*24*60),60) AS MIN]]>
+    FROM EMP_NOTICE A LEFT JOIN SYS_NOTICE B ON A.NOTICE_ID = B.ID
+    LEFT JOIN EMP_IMG C ON B.EMP_ID = C.EMP_ID
+    LEFT JOIN EMP_DIC_BASIC_INFO D ON B.EMP_ID = D.EMP_ID
+    WHERE A.EMP_ID = #{empId,jdbcType=DECIMAL}
+    ORDER BY A.IS_READ ASC ,B.RELEASE_TIME DESC
+  </select>
+  <update id="updateIsRead">
+    UPDATE EMP_NOTICE
+    SET IS_READ = 1
+    WHERE EMP_ID = #{empId,jdbcType=DECIMAL}
+    and NOTICE_ID = #{noticeId,jdbcType=DECIMAL}
+  </update>
+</mapper>

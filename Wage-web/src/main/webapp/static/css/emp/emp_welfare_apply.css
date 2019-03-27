@@ -1,0 +1,19 @@
+.layui-form-label {
+    width: 100px;
+}
+.layui-input, .layui-textarea {
+    display: block;
+    padding-left: 10px;
+}
+#empId,#empName{
+    cursor: not-allowed;
+}
+#welfareForm{
+    margin:10px auto auto auto;
+    padding:15px;
+    width: 560px;
+    border:1px solid rgba(228, 228, 228, 1);
+    border-radius:5px;
+    background-color: white;
+    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.3)
+}

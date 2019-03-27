@@ -1,0 +1,82 @@
+#chart3{
+    float: left;
+}
+#chart4{
+    float: right;
+}
+#cardparent1{
+    width: 100%;
+}
+#myModal1,#addModal
+{
+    top:90px;
+}
+#btnGroup{
+    width: 430px;
+    float: right;
+    margin-left: 5px;
+}
+#btnGroup a{
+    width: 70px;
+    margin-right: 8px;
+    float: right;
+}
+#applyModal,#applyHisModal
+{
+    top:45px;
+}
+.layout-panel-north, .layout-panel-south {
+    z-index: 5;
+}
+
+td.fc-day:link { color:#000; text-decoration:none;}
+td.fc-day:visited { color:#000; text-decoration:none;}
+td.fc-day:hover { color: #0c0500; text-decoration:none; background-color: #eff3f6;}
+
+#restStartTimeMin,#restStartTimeMax{
+    width:154px;
+    left: 30px;
+    height: 24.8px;
+}
+#tb1{
+    padding:5px;
+    height: 38px;
+    padding-top: 7px;
+}
+
+#chart4{
+    width: 78.8%;
+    height: 100%
+}
+#tb{
+    padding:5px;
+}
+#Eq{
+    width:93px;
+    height: 26px;
+}
+#chart3{
+    width: 18.8%;
+    height: 100%;
+}
+#cardparent1{
+    height: 100%;
+    padding: 28px;
+}
+#calendar{
+    width:100%;
+}
+#restStartTimeMin,#restStartTimeMax,#label1,#label2{
+    float: left;
+}
+#label1,#label2{
+    margin-top:5px;
+    font-size: 12px;
+}
+#label2{
+    margin-right: 3px;
+    margin-left: 3px;
+}
+#restStartTimeMin,#restStartTimeMax{
+    font-size: 13px;
+}

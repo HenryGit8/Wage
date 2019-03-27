@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wage.biz.mybatis.HisSalChangeMapper" >
+  <!--<cache eviction="LRU" type="com.wage.redis.RedisCache" />-->
+  <cache type="org.mybatis.caches.ignite.IgniteCacheAdapter" />
+  <resultMap id="BaseResultMap" type="com.wage.model.HisSalChange" >
+    <id column="EMP_ID" property="empId" jdbcType="DECIMAL" />
+    <id column="CHANGE_TIME" property="changeTime" jdbcType="DECIMAL" />
+    <result column="TYPE_OF_WAGE" property="typeOfWage" jdbcType="DECIMAL" />
+  </resultMap>
+  <resultMap id="BaseResultMapExt" type="com.wage.model.ext.HisSalChangeExt" extends="BaseResultMap">
+    <result column="EMP_NAME" property="empName" jdbcType="VARCHAR" />
+    <result column="DEDUCT_SAL" property="deductSal" jdbcType="DECIMAL" />
+    <result column="OTHER_SAL" property="otherSal" jdbcType="DECIMAL" />
+    <result column="TOTAL" property="total" jdbcType="DECIMAL" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    EMP_ID, CHANGE_TIME, TYPE_OF_WAGE
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="com.wage.model.HisSalChangeKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from HIS_SAL_CHANGE
+    where EMP_ID = #{empId,jdbcType=DECIMAL}
+      and CHANGE_TIME = #{changeTime,jdbcType=DECIMAL}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="com.wage.model.HisSalChangeKey" >
+    delete from HIS_SAL_CHANGE
+    where EMP_ID = #{empId,jdbcType=DECIMAL}
+  </delete>
+  <insert id="insert" parameterType="com.wage.model.HisSalChange" >
+    insert into HIS_SAL_CHANGE (EMP_ID, CHANGE_TIME, TYPE_OF_WAGE
+      )
+    values (#{empId,jdbcType=DECIMAL}, #{changeTime,jdbcType=DECIMAL}, #{typeOfWage,jdbcType=DECIMAL}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.wage.model.HisSalChange" >
+    insert into HIS_SAL_CHANGE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="empId != null" >
+        EMP_ID,
+      </if>
+      <if test="changeTime != null" >
+        CHANGE_TIME,
+      </if>
+      <if test="typeOfWage != null" >
+        TYPE_OF_WAGE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="empId != null" >
+        #{empId,jdbcType=DECIMAL},
+      </if>
+      <if test="changeTime != null" >
+        #{changeTime,jdbcType=DECIMAL},
+      </if>
+      <if test="typeOfWage != null" >
+        #{typeOfWage,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wage.model.HisSalChange" >
+    update HIS_SAL_CHANGE
+    <set >
+      <if test="typeOfWage != null" >
+        TYPE_OF_WAGE = #{typeOfWage,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where EMP_ID = #{empId,jdbcType=DECIMAL}
+      and CHANGE_TIME = #{changeTime,jdbcType=DECIMAL}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.wage.model.HisSalChange" >
+    update HIS_SAL_CHANGE
+    set TYPE_OF_WAGE = #{typeOfWage,jdbcType=DECIMAL}
+    where EMP_ID = #{empId,jdbcType=DECIMAL}
+      and CHANGE_TIME = #{changeTime,jdbcType=DECIMAL}
+  </update>
+  <select id="getByEmpId" parameterType="java.lang.Integer" resultMap="BaseResultMapExt">
+    select A.*,D.EMP_NAME,(case when B.OTHER_SAL IS NULL then 0 else B.OTHER_SAL end) OTHER_SAL,
+    (case when C.DEDUCT_SAL IS NULL then 0 else C.DEDUCT_SAL end) DEDUCT_SAL,
+    (A.TYPE_OF_WAGE+(case when B.OTHER_SAL IS NULL then 0 else B.OTHER_SAL end)-(case when C.DEDUCT_SAL IS NULL then 0 else C.DEDUCT_SAL end)) TOTAL
+    from HIS_SAL_CHANGE A LEFT JOIN EMP_MON_OTHER_SAL B ON A.EMP_ID = B.EMP_ID AND A.CHANGE_TIME = B.YEAR_MONTH
+    LEFT JOIN EMP_MON_DEDUCT_SAL C ON A.EMP_ID = C.EMP_ID AND A.CHANGE_TIME = C.YEAR_MONTH
+    LEFT JOIN EMP_DIC_BASIC_INFO D ON A.EMP_ID = D.EMP_ID
+    WHERE 1=1
+    <if test="empId != null" >
+      AND A.EMP_ID = #{empId,jdbcType=DECIMAL}
+    </if>
+    ORDER BY CHANGE_TIME DESC
+  </select>
+  <select id="getTotal" resultType="BigDecimal" parameterType="java.lang.Integer">
+    select * from (
+      select ((case when A.TYPE_OF_WAGE IS NULL then 0 else A.TYPE_OF_WAGE end)+(case when B.OTHER_SAL IS NULL then 0 else B.OTHER_SAL end)-(case when C.DEDUCT_SAL IS NULL then 0 else C.DEDUCT_SAL end)) TOTAL,A.CHANGE_TIME
+      from HIS_SAL_CHANGE A LEFT JOIN EMP_MON_OTHER_SAL B ON A.EMP_ID = B.EMP_ID AND A.CHANGE_TIME = B.YEAR_MONTH
+      LEFT JOIN EMP_MON_DEDUCT_SAL C ON A.EMP_ID = C.EMP_ID AND A.CHANGE_TIME = C.YEAR_MONTH
+      WHERE A.EMP_ID = #{empId,jdbcType=DECIMAL}
+      ORDER BY A.CHANGE_TIME DESC
+    ) where rownum &lt; =6
+    ORDER BY CHANGE_TIME ASC
+  </select>
+  <select id="getMonth" resultType="Integer" parameterType="java.lang.Integer">
+    select * from (
+      SELECT CHANGE_TIME
+      FROM HIS_SAL_CHANGE
+      WHERE EMP_ID = #{empId,jdbcType=DECIMAL}
+     order by CHANGE_TIME DESC
+    ) where rownum &lt; =6
+    ORDER BY CHANGE_TIME ASC
+  </select>
+  <select id="getBasicSal" resultType="BigDecimal" parameterType="java.lang.Integer">
+    select * from (
+    select TYPE_OF_WAGE,CHANGE_TIME
+    from HIS_SAL_CHANGE
+    WHERE EMP_ID = #{empId,jdbcType=DECIMAL}
+    ORDER BY CHANGE_TIME DESC
+    ) where rownum &lt; =6
+    ORDER BY CHANGE_TIME ASC
+  </select>
+  <select id="getOther" resultType="BigDecimal" parameterType="java.lang.Integer">
+    select * from (
+    select OTHER_SAL,YEAR_MONTH
+    from EMP_MON_OTHER_SAL
+    WHERE EMP_ID = #{empId,jdbcType=DECIMAL}
+    ORDER BY YEAR_MONTH DESC
+    ) where rownum &lt; =6
+    ORDER BY YEAR_MONTH ASC
+  </select>
+  <select id="getDeduct" resultType="BigDecimal" parameterType="java.lang.Integer">
+    select * from (
+    select DEDUCT_SAL,YEAR_MONTH
+    from EMP_MON_DEDUCT_SAL
+    WHERE EMP_ID = #{empId,jdbcType=DECIMAL}
+    ORDER BY YEAR_MONTH DESC
+    ) where rownum &lt; =6
+    ORDER BY YEAR_MONTH ASC
+  </select>
+  <select id="getTotalBasic" resultType="java.math.BigDecimal" parameterType="java.lang.Integer">
+    SELECT sum(TYPE_OF_WAGE)
+    FROM (
+    select * from (
+    select TYPE_OF_WAGE
+    from HIS_SAL_CHANGE
+    WHERE EMP_ID = #{empId,jdbcType=DECIMAL}
+    ORDER BY CHANGE_TIME DESC
+    ) where rownum &lt; =6
+    )
+  </select>
+  <select id="getTotalOther" resultType="java.math.BigDecimal" parameterType="java.lang.Integer">
+    SELECT sum(OTHER_SAL)
+    FROM (
+    select * from (
+    select OTHER_SAL
+    from EMP_MON_OTHER_SAL
+    WHERE EMP_ID = #{empId,jdbcType=DECIMAL}
+    ORDER BY YEAR_MONTH DESC
+    ) where rownum &lt; =6
+    )
+  </select>
+  <select id="getTotalDeduct" resultType="java.math.BigDecimal" parameterType="java.lang.Integer">
+  SELECT sum(DEDUCT_SAL)
+  FROM (
+  select * from (
+  select DEDUCT_SAL
+  from EMP_MON_DEDUCT_SAL
+  WHERE EMP_ID = #{empId,jdbcType=DECIMAL}
+    ORDER BY YEAR_MONTH DESC
+  ) where rownum &lt; =6
+  )
+  </select>
+  <select id="getTotalAll" resultType="java.math.BigDecimal" parameterType="java.lang.Integer">
+    SELECT sum(TOTAL)
+    FROM (
+    select * from (
+      select (A.TYPE_OF_WAGE+B.OTHER_SAL+C.DEDUCT_SAL) TOTAL
+      from HIS_SAL_CHANGE A LEFT JOIN EMP_MON_OTHER_SAL B ON A.EMP_ID = B.EMP_ID AND A.CHANGE_TIME = B.YEAR_MONTH
+      LEFT JOIN EMP_MON_DEDUCT_SAL C ON A.EMP_ID = C.EMP_ID AND A.CHANGE_TIME = C.YEAR_MONTH
+      WHERE A.EMP_ID = #{empId,jdbcType=DECIMAL}
+    ORDER BY A.CHANGE_TIME DESC
+    ) where rownum &lt; =6
+    )
+  </select>
+  <select id="getBasicSalOne" resultType="java.math.BigDecimal" parameterType="java.lang.Integer">
+    select TYPE_OF_WAGE
+    from HIS_SAL_CHANGE
+    WHERE EMP_ID = #{empId,jdbcType=DECIMAL}
+    AND CHANGE_TIME = #{changeTime,jdbcType=DECIMAL}
+  </select>
+  <select id="getOtherOne" resultType="java.math.BigDecimal" parameterType="java.lang.Integer">
+    select OTHER_SAL
+    from EMP_MON_OTHER_SAL
+    WHERE EMP_ID = #{empId,jdbcType=DECIMAL}
+    AND YEAR_MONTH = #{changeTime,jdbcType=DECIMAL}
+  </select>
+  <select id="getDeductOne" resultType="java.math.BigDecimal" parameterType="java.lang.Integer">
+    select DEDUCT_SAL
+    from EMP_MON_DEDUCT_SAL
+    WHERE EMP_ID = #{empId,jdbcType=DECIMAL}
+    AND YEAR_MONTH = #{changeTime,jdbcType=DECIMAL}
+  </select>
+  <insert id="insertAll">
+    INSERT INTO HIS_SAL_CHANGE(EMP_ID,TYPE_OF_WAGE,CHANGE_TIME)
+    SELECT EMP_ID,MON_SAL,to_char(SYSDATE,'yyyymm')
+    FROM EMP_MON_SAL
+    WHERE (EMP_ID,to_char(SYSDATE,'yyyymm')) NOT IN (SELECT EMP_ID,CHANGE_TIME AS YEAR_MONTH FROM HIS_SAL_CHANGE )
+  </insert>
+  <update id="updateMonSalChange">
+    UPDATE HIS_SAL_CHANGE
+    SET TYPE_OF_WAGE =
+    (
+    SELECT MON_SAL FROM EMP_MON_SAL WHERE EMP_ID = #{empId,jdbcType=DECIMAL}
+    )
+    WHERE CHANGE_TIME = #{changeTime,jdbcType=DECIMAL}
+    AND EMP_ID = #{empId,jdbcType=DECIMAL}
+  </update>
+
+  <insert id="insertByMonth" parameterType="java.lang.Integer">
+    INSERT INTO HIS_SAL_CHANGE(EMP_ID,TYPE_OF_WAGE,CHANGE_TIME)
+    SELECT EMP_ID,MON_SAL,#{yearMonth,jdbcType=DECIMAL}
+    FROM EMP_MON_SAL
+    WHERE (EMP_ID,#{yearMonth,jdbcType=DECIMAL}) NOT IN (SELECT EMP_ID,CHANGE_TIME AS YEAR_MONTH FROM HIS_SAL_CHANGE )
+  </insert>
+</mapper>

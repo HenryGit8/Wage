@@ -1,0 +1,21 @@
+div .btn-separator {
+    float: right;
+    height: 24px;
+    border-left: 1px solid LightGrey;
+    border-right: 0px solid LightGrey;
+    margin: 1px 1px;
+}
+#myModal
+{
+    top:90px;
+}
+#chart1{
+    float: left;
+}
+#chart2{
+    float: right;
+}
+#myModal2
+ {
+     top:60px;
+ }

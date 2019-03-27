@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wage.biz.mybatis.HisOverMapper" >
+  <!--<cache eviction="LRU" type="com.wage.redis.RedisCache" />-->
+  <cache type="org.mybatis.caches.ignite.IgniteCacheAdapter" />
+  <resultMap id="BaseResultMap" type="com.wage.model.HisOver" >
+    <id column="EMP_ID" property="empId" jdbcType="DECIMAL" />
+    <id column="OVER_TIME_START" property="overTimeStart" jdbcType="TIMESTAMP" />
+    <result column="OVER_HOUR" property="overHour" jdbcType="DECIMAL" />
+    <result column="IS_CHECK" property="isCheck" jdbcType="DECIMAL" />
+    <result column="OVER_REASON" property="overReason" jdbcType="VARCHAR" />
+    <result column="OVER_TYPE" property="overType" jdbcType="DECIMAL" />
+    <result column="OVER_TIME_END" property="overTimeEnd" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <resultMap id="BaseResultMapExt" type="com.wage.model.ext.HisOverExt" extends="BaseResultMap">
+    <result column="EMP_NAME" property="empName" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    EMP_ID, OVER_TIME_START, OVER_HOUR, IS_CHECK, OVER_REASON, OVER_TYPE, OVER_TIME_END
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="com.wage.model.HisOverKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from HIS_OVER
+    where EMP_ID = #{empId,jdbcType=DECIMAL}
+      and OVER_TIME_START = #{overTimeStart,jdbcType=TIMESTAMP}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="com.wage.model.HisOverKey" >
+    delete from HIS_OVER
+    where EMP_ID = #{empId,jdbcType=DECIMAL}
+      and OVER_TIME_START = #{overTimeStart,jdbcType=TIMESTAMP}
+  </delete>
+  <insert id="insert" parameterType="com.wage.model.HisOver" >
+    insert into HIS_OVER (EMP_ID, OVER_TIME_START, OVER_HOUR, 
+      IS_CHECK, OVER_REASON, OVER_TYPE, 
+      OVER_TIME_END)
+    values (#{empId,jdbcType=DECIMAL}, #{overTimeStart,jdbcType=TIMESTAMP}, #{overHour,jdbcType=DECIMAL}, 
+      #{isCheck,jdbcType=DECIMAL}, #{overReason,jdbcType=VARCHAR}, #{overType,jdbcType=DECIMAL}, 
+      #{overTimeEnd,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.wage.model.HisOver" >
+    insert into HIS_OVER
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="empId != null" >
+        EMP_ID,
+      </if>
+      <if test="overTimeStart != null" >
+        OVER_TIME_START,
+      </if>
+      <if test="overHour != null" >
+        OVER_HOUR,
+      </if>
+      <if test="isCheck != null" >
+        IS_CHECK,
+      </if>
+      <if test="overReason != null" >
+        OVER_REASON,
+      </if>
+      <if test="overType != null" >
+        OVER_TYPE,
+      </if>
+      <if test="overTimeEnd != null" >
+        OVER_TIME_END,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="empId != null" >
+        #{empId,jdbcType=DECIMAL},
+      </if>
+      <if test="overTimeStart != null" >
+        #{overTimeStart,jdbcType=TIMESTAMP},
+      </if>
+      <if test="overHour != null" >
+        #{overHour,jdbcType=DECIMAL},
+      </if>
+      <if test="isCheck != null" >
+        #{isCheck,jdbcType=DECIMAL},
+      </if>
+      <if test="overReason != null" >
+        #{overReason,jdbcType=VARCHAR},
+      </if>
+      <if test="overType != null" >
+        #{overType,jdbcType=DECIMAL},
+      </if>
+      <if test="overTimeEnd != null" >
+        #{overTimeEnd,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wage.model.HisOver" >
+    update HIS_OVER
+    <set >
+      <if test="overHour != null" >
+        OVER_HOUR = #{overHour,jdbcType=DECIMAL},
+      </if>
+      <if test="isCheck != null" >
+        IS_CHECK = #{isCheck,jdbcType=DECIMAL},
+      </if>
+      <if test="overReason != null" >
+        OVER_REASON = #{overReason,jdbcType=VARCHAR},
+      </if>
+      <if test="overType != null" >
+        OVER_TYPE = #{overType,jdbcType=DECIMAL},
+      </if>
+      <if test="overTimeEnd != null" >
+        OVER_TIME_END = #{overTimeEnd,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where EMP_ID = #{empId,jdbcType=DECIMAL}
+      and OVER_TIME_START = #{overTimeStart,jdbcType=TIMESTAMP}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.wage.model.HisOver" >
+    update HIS_OVER
+    set OVER_HOUR = #{overHour,jdbcType=DECIMAL},
+      IS_CHECK = #{isCheck,jdbcType=DECIMAL},
+      OVER_REASON = #{overReason,jdbcType=VARCHAR},
+      OVER_TYPE = #{overType,jdbcType=DECIMAL},
+      OVER_TIME_END = #{overTimeEnd,jdbcType=TIMESTAMP}
+    where EMP_ID = #{empId,jdbcType=DECIMAL}
+      and OVER_TIME_START = #{overTimeStart,jdbcType=TIMESTAMP}
+  </update>
+  <select id="getByEmpid" resultMap="BaseResultMapExt" >
+    SELECT A.*,B.EMP_NAME
+    FROM HIS_OVER A LEFT JOIN EMP_DIC_BASIC_INFO B ON A.EMP_ID = B.EMP_ID
+    WHERE A.IS_CHECK != 2
+    <if test="empId != null" >
+      AND A.EMP_ID = #{empId,jdbcType=DECIMAL}
+    </if>
+    <if test="overTimeStartMin != null and overTimeStartMax != null" >
+      AND (A.OVER_TIME_START BETWEEN #{overTimeStartMin,jdbcType=TIMESTAMP} AND #{overTimeStartMax,jdbcType=TIMESTAMP}
+      OR A.OVER_TIME_START BETWEEN #{overTimeStartMax,jdbcType=TIMESTAMP} AND #{overTimeStartMin,jdbcType=TIMESTAMP})
+    </if>
+    ORDER BY A.OVER_TIME_START DESC
+  </select>
+  <update id="updateHisOver" parameterType="com.wage.model.ext.HisOverOExt" >
+    update HIS_OVER
+    set OVER_HOUR = #{overHour,jdbcType=DECIMAL},
+    <if test="isCheck != null" >
+      IS_CHECK = #{isCheck,jdbcType=DECIMAL},
+    </if>
+      OVER_REASON = #{overReason,jdbcType=VARCHAR},
+      OVER_TYPE = #{overType,jdbcType=DECIMAL},
+      OVER_TIME_END = #{overTimeEnd,jdbcType=TIMESTAMP},
+      OVER_TIME_START = #{overTimeStart,jdbcType=TIMESTAMP}
+    where EMP_ID = #{empId,jdbcType=DECIMAL}
+      and OVER_TIME_START = #{overTimeStartOld,jdbcType=TIMESTAMP}
+  </update>
+  <select id="getByEmpidC" resultMap="BaseResultMapExt">
+    SELECT A.*,B.EMP_NAME
+    FROM HIS_OVER A LEFT JOIN EMP_DIC_BASIC_INFO B ON A.EMP_ID = B.EMP_ID
+    WHERE 1=1
+    <if test="isCheck != 0" >
+      AND A.IS_CHECK != 0
+    </if>
+    <if test="isCheck == 0" >
+      AND A.IS_CHECK = 0
+    </if>
+    ORDER BY A.OVER_TIME_START DESC
+  </select>
+  <select id="findThisMonthData" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select *
+    from HIS_OVER
+    where (to_char(sysdate,'yyyy-mm')=to_char(OVER_TIME_START,'yyyy-mm')
+    or to_char(sysdate,'yyyy-mm')=to_char(OVER_TIME_END,'yyyy-mm'))
+    and EMP_ID = #{empId,jdbcType=DECIMAL}
+    and IS_CHECK = 1
+  </select>
+</mapper>

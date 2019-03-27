@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wage.biz.mybatis.SysNoticeMapper" >
+  <!--<cache eviction="LRU" type="com.wage.redis.RedisCache" />-->
+  <cache type="org.mybatis.caches.ignite.IgniteCacheAdapter" />
+  <resultMap id="BaseResultMap" type="com.wage.model.SysNotice" >
+    <id column="ID" property="id" jdbcType="DECIMAL" />
+    <result column="EMP_ID" property="empId" jdbcType="DECIMAL" />
+    <result column="RELEASE_TIME" property="releaseTime" jdbcType="TIMESTAMP" />
+    <result column="CONTENT" property="content" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap id="BaseResultMapExt" type="com.wage.model.ext.SysNoticeExt" extends="BaseResultMap">
+    <result column="EMP_NAME" property="empName" jdbcType="VARCHAR" />
+    <result column="IS_THIS_EMP_S" property="isThisEmpS" jdbcType="DECIMAL" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, EMP_ID, RELEASE_TIME, CONTENT
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from SYS_NOTICE
+    where ID = #{id,jdbcType=DECIMAL}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from SYS_NOTICE
+    where ID = #{id,jdbcType=DECIMAL}
+  </delete>
+  <insert id="insert" parameterType="com.wage.model.SysNotice" >
+    insert into SYS_NOTICE (ID, EMP_ID, RELEASE_TIME, 
+      CONTENT)
+    SELECT (case when MAX(ID) IS NULL then 1 else MAX(ID)+1 end), #{empId,jdbcType=DECIMAL}, SYSDATE,
+      #{content,jdbcType=VARCHAR}
+      FROM SYS_NOTICE
+  </insert>
+  <insert id="insertSelective" parameterType="com.wage.model.SysNotice" >
+    insert into SYS_NOTICE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID,
+      </if>
+      <if test="empId != null" >
+        EMP_ID,
+      </if>
+      <if test="releaseTime != null" >
+        RELEASE_TIME,
+      </if>
+      <if test="content != null" >
+        CONTENT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=DECIMAL},
+      </if>
+      <if test="empId != null" >
+        #{empId,jdbcType=DECIMAL},
+      </if>
+      <if test="releaseTime != null" >
+        #{releaseTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="content != null" >
+        #{content,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wage.model.SysNotice" >
+    update SYS_NOTICE
+    <set >
+      <if test="empId != null" >
+        EMP_ID = #{empId,jdbcType=DECIMAL},
+      </if>
+        RELEASE_TIME = SYSDATE,
+      <if test="content != null" >
+        CONTENT = #{content,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=DECIMAL}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.wage.model.SysNotice" >
+    update SYS_NOTICE
+    set EMP_ID = #{empId,jdbcType=DECIMAL},
+      RELEASE_TIME = #{releaseTime,jdbcType=TIMESTAMP},
+      CONTENT = #{content,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=DECIMAL}
+  </update>
+  <select id="findAllByEmpId" resultMap="BaseResultMapExt" >
+    SELECT A.*,(case when A.EMP_ID = #{empId,jdbcType=DECIMAL} then 1 else 0 end) AS IS_THIS_EMP_S,B.EMP_NAME
+    FROM SYS_NOTICE A LEFT JOIN EMP_DIC_BASIC_INFO B ON A.EMP_ID = B.EMP_ID
+    WHERE 1=1
+    <if test="empName != null" >
+      AND (B.EMP_NAME LIKE CONCAT(CONCAT('%',#{empName,jdbcType=VARCHAR}),'%')
+      OR A.EMP_ID LIKE CONCAT(CONCAT('%',#{empName,jdbcType=VARCHAR}),'%'))
+    </if>
+    <if test="releaseTimeStart != null and releaseTimeEnd != null" >
+      AND (A.RELEASE_TIME BETWEEN #{releaseTimeStart,jdbcType=TIMESTAMP} AND #{releaseTimeEnd,jdbcType=TIMESTAMP}
+      OR A.RELEASE_TIME BETWEEN #{releaseTimeEnd,jdbcType=TIMESTAMP} AND #{releaseTimeStart,jdbcType=TIMESTAMP})
+    </if>
+    ORDER BY IS_THIS_EMP_S DESC,A.RELEASE_TIME DESC
+  </select>
+  <select id="findAllByNotEmpId" resultMap="BaseResultMap" >
+    SELECT *
+    FROM SYS_NOTICE
+    WHERE EMP_ID != #{empId,jdbcType=DECIMAL}
+  </select>
+  <select id="selectMaxId" resultType="java.lang.Integer">
+    SELECT MAX(ID)
+    FROM SYS_NOTICE
+  </select>
+  <select id="selectOneNotice" resultMap="BaseResultMapExt">
+    SELECT A.*,B.EMP_NAME
+    FROM SYS_NOTICE A LEFT JOIN EMP_DIC_BASIC_INFO B ON A.EMP_ID = B.EMP_ID
+    WHERE A.ID = #{id,jdbcType=DECIMAL}
+  </select>
+</mapper>
